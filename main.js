@@ -28,7 +28,7 @@ io.on('connection', function (socket) {
   socket.on('disconnect', function (data) {
     console.log("disconnected");
   });
-  socket.on('AdminAccess', function (data){
+  socket.on('auth', function (data){
     console.log(socket+" has requested admin...");
     if (data["password"].toString() == password.toString()){
       console.log("...and got it.");
