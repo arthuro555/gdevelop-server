@@ -1,33 +1,22 @@
 {
-  "name": "node-js-getting-started",
-  "version": "0.3.0",
-  "description": "A sample Node.js app using Express 4",
-  "engines": {
-    "node": "10.x"
+  "name": "GDevelop5SocketServer",
+  "description": "Server for GDevelop 5 Socket extension",
+  "version": "0.0.1",
+  "author": "arthuro555",
+  "homepage": "https://github.com/arthuro555/gdevelop-server",
+  "license": "MIT",
+  "bin": {
+    "gdsockserver": "./main.js"
   },
-  "main": "index.js",
-  "scripts": {
-    "start": "node index.js",
-    "test": "node test.js"
-  },
+  "main": "main.js",
+  "private": true,
   "dependencies": {
-    "cool-ascii-faces": "^1.3.4",
-    "ejs": "^2.5.6",
-    "express": "^4.15.2",
-    "pg": "^7.4.3"
+    "express": "^4.17.1",
+    "socket.io": "^2.3.0",
+    "socket.io-fix-close": "^0.0.2",
+    "sqlite3": "^4.1.0"
   },
-  "devDependencies": {
-    "request": "^2.81.0",
-    "tape": "^4.7.0"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/heroku/node-js-getting-started"
-  },
-  "keywords": [
-    "node",
-    "heroku",
-    "express"
-  ],
-  "license": "MIT"
+  "optionalDependencies": {
+    "pkg": "^4.4.0"
+  }
 }
