@@ -29,9 +29,9 @@ io.on('connection', function (socket) {
     console.log("disconnected");
   });
   socket.on('auth', function (data){
-    console.log(socket+" has requested admin...");
+    console.log(data["username"]+" is logging in...");
     if (data["password"].toString() == password.toString()){
-      console.log("...and got it.");
+      console.log(data["username"]+" logged in.");
       socket.on("off", function() {
         // Try to close the server a clean way
         io.emit("Closing", "true");
@@ -42,11 +42,12 @@ io.on('connection', function (socket) {
         db.close((err) => {
           if (err) {
             return console.error("Couldn't close database! Data loss possible! Error: "+err.message);
-          }
+          };
         });
-      })
+      });
     } else {
-      console.log("...and didn't got anything :'(")
+      console.log("Authentification Failed");
+      socket.emit("AuthFail");
     };
   });
 });

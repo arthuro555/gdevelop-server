@@ -11,6 +11,7 @@
   "main": "main.js",
   "private": true,
   "dependencies": {
+    "eslint": "^6.5.1",
     "express": "^4.17.1",
     "socket.io": "^2.3.0",
     "socket.io-fix-close": "^0.0.2",
