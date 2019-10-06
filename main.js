@@ -2,25 +2,16 @@ const express = require('express');
 const socketIO = require('socket.io');
 var crypto = require('crypto');
 const wireUpServer = require('socket.io-fix-close');
-// var fs = require('fs');
-var sqlite3 = require('sqlite3').verbose();
+const fs = require('fs');
+
+let rawdata = fs.readFileSync('userdata.json');
+let userdata = JSON.parse(rawdata);
 
 const app = express();
 const httpServer = app.listen(80);
 const io = socketIO(httpServer);
 
 wireUpServer(httpServer, io);
-
-// Init the database
-console.log("Database Initializing...");
-let db = new sqlite3.Database(':memory:', (err) => {
-  if (err) {
-    return console.error("Could not Init the databse: "+err.message);
-  }
-});
-console.log("Database Initialized");
-
-var password ="123";
 
 console.log("Listening...");
 io.on('connection', function (socket) {
@@ -29,9 +20,19 @@ io.on('connection', function (socket) {
     console.log("disconnected");
   });
   socket.on('auth', function (data){
-    console.log(data["username"]+" is logging in...");
-    if (data["password"].toString() == password.toString()){
-      console.log(data["username"]+" logged in.");
+    var p = crypto.createHash('sha256').update(data["password"]).digest('hex');
+    var u = data["username"];
+    console.log(u+" is logging in...");
+    if (u in userdata){
+      console.log("Logging into existing account.")
+    } else {
+      userdata[u] = {"username":u, "password":p, "admin":false, "data":{}}
+      console.log("Registered New User.");
+    };
+    if (userdata[u]["password"] == p) {
+      console.log(u+" logged in.");
+      socket.emit("authSuccess");
+
       socket.on("off", function() {
         // Try to close the server a clean way
         io.emit("Closing", "true");
@@ -39,14 +40,14 @@ io.on('connection', function (socket) {
         io.close();
         httpServer.close();
         console.log("Server Closed");
-        db.close((err) => {
-          if (err) {
-            return console.error("Couldn't close database! Data loss possible! Error: "+err.message);
-          };
-        });
+        fs.writeFileSync('userdata.json', userdata);
+      });
+
+      socket.on("updateTick", function(data) {
+        socket.emit("tickUpdate", userdata[data.user]["data"]);
       });
     } else {
-      console.log("Authentification Failed");
+      console.log("Authentification Failed.");
       socket.emit("AuthFail");
     };
   });
