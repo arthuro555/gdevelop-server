@@ -24,23 +24,25 @@ io.on('connection', function (socket) {
     var u = data["username"];
     console.log(u+" is logging in...");
     if (u in userdata){
-      console.log("Logging into existing account.")
+      console.log("Logging into existing account.");
     } else {
-      userdata[u] = {"username":u, "password":p, "admin":false, "data":{}}
+      userdata[u] = {"username":u, "password":p, "admin":false, "data":{}};
       console.log("Registered New User.");
     };
     if (userdata[u]["password"] == p) {
       console.log(u+" logged in.");
       socket.emit("authSuccess");
 
-      socket.on("off", function() {
-        // Try to close the server a clean way
-        io.emit("Closing", "true");
-        io.engine.close();
-        io.close();
-        httpServer.close();
-        console.log("Server Closed");
-        fs.writeFileSync('userdata.json', userdata);
+      socket.on("off", function(data) {
+        if(userdata[data.user]["admin"]){
+          // Try to close the server a clean way
+          io.emit("Closing", true);
+          io.engine.close();
+          io.close();
+          httpServer.close();
+          console.log("Server Closed");
+          fs.writeFileSync('userdata.json', JSON.stringify(userdata));
+        }
       });
 
       socket.on("updateTick", function(data) {
