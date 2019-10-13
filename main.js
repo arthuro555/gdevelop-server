@@ -54,3 +54,25 @@ io.on('connection', function (socket) {
     };
   });
 });
+
+if (process.platform === "win32") {
+  var rl = require("readline").createInterface({
+    input: process.stdin,
+    output: process.stdout
+  });
+
+  rl.on("SIGINT", function () {
+    process.emit("SIGINT");
+  });
+}
+
+process.on('SIGINT', function() {
+  console.log("Caught interrupt signal");
+  io.emit("Closing", true);
+  io.engine.close();
+  io.close();
+  httpServer.close();
+  console.log("Server Closed");
+  fs.writeFileSync('userdata.json', JSON.stringify(userdata));
+  process.exit();
+});
