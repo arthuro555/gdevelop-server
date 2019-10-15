@@ -6,6 +6,8 @@ const fs = require('fs');
 
 let rawdata = fs.readFileSync('userdata.json');
 let userdata = JSON.parse(rawdata);
+let p = require("player.js")
+let pm = require("player.js")
 
 const app = express();
 const httpServer = app.listen(80);
