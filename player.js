@@ -11,11 +11,12 @@ class object {
         this.x = x;
         this.y = y;
     };
-};
+}
 
 class player {
-    data = Array();
-    constructor(username, token){
+    constructor(username, token, uuid){
+        this.data = Array();
+        this.uuid = uuid;
         this.username = username;
         this.token = token;
     };
@@ -51,13 +52,13 @@ class player {
     };
     removeObject(name = null, uuid = null){
         if(!name === null){
-            var id = this.getObjectID(this.getObjectByName(name))
+            var id = this.getObjectID(this.getObjectByName(name));
             if(id === null){
                return false
             }
             this.data.splice(id, 1);
             return true;
-        };
+        }
         if(!uuid === null){
             var id = this.getObjectID(uuid);
             if(id === null){
@@ -65,7 +66,12 @@ class player {
             }
             this.data.splice(id, 1);
             return true;
-        };
+        }
         return false;
     };
-};
+    getToken(){
+        return this.token;
+    };
+}
+exports.object = object;
+exports.player = player;

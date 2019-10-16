@@ -1,13 +1,13 @@
 const express = require('express');
 const socketIO = require('socket.io');
-var crypto = require('crypto');
+let crypto = require('crypto');
 const wireUpServer = require('socket.io-fix-close');
 const fs = require('fs');
 
 let rawdata = fs.readFileSync('userdata.json');
 let userdata = JSON.parse(rawdata);
-let p = require("player.js")
-let pm = require("player.js")
+let pclass = require("./player");
+let pm = require("./playermanager.js").pmanager();
 
 const app = express();
 const httpServer = app.listen(80);
