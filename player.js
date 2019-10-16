@@ -1,19 +1,25 @@
-object = {
-    object : function(name, uuid, x, y){
+class object {
+    constructor(name, uuid, x, y){
         this.name = name;
         this.uuid = uuid;
         this.x = x;
         this.y = y;
-    }
+    };
+    update(name, uuid, x, y){
+        this.name = name;
+        this.uuid = uuid;
+        this.x = x;
+        this.y = y;
+    };
 };
 
-player = {
-    data : Array(),
-    player : function(username, token){
+class player {
+    data = Array();
+    constructor(username, token){
         this.username = username;
         this.token = token;
-    },
-    getObjectByName : function(name){
+    };
+    getObjectByName(name){
         var i;
         for (i = 0; i < this.data.length; i += 1) {
             if (this.data[i].name === name) {
@@ -21,8 +27,8 @@ player = {
             }
         }
         return null; //not found
-    },
-    getObjectByUUID : function(uuid){
+    };
+    getObjectByUUID(uuid){
         var i;
         for (i = 0; i < this.data.length; i += 1) {
             if (this.data[i].uuid === uuid) {
@@ -30,8 +36,8 @@ player = {
             }
         }
         return null; //not found
-    },
-    getObjectID : function(uuid){
+    };
+    getObjectID(uuid){
         var i;
         for (i = 0; i < this.data.length; i += 1) {
             if (this.data[i].uuid === uuid) {
@@ -39,11 +45,11 @@ player = {
             }
         }
         return null; //not found
-    },
-    addObject : function(object){
+    };
+    addObject(object){
         this.data.push(object)
-    },
-    removeObject : function(name = null, uuid = null){
+    };
+    removeObject(name = null, uuid = null){
         if(!name === null){
             var id = this.getObjectID(this.getObjectByName(name))
             if(id === null){
@@ -61,5 +67,5 @@ player = {
             return true;
         };
         return false;
-    }
-}
+    };
+};
