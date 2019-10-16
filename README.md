@@ -1,1 +1,1 @@
-# gdevelop-test-server
+# gdevelop-server
