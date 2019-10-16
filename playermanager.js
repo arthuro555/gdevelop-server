@@ -38,7 +38,7 @@ class pmanager{
         if(p === null){
             return false;
         }
-        p.online = false;
+        p.logout();
         return true;
     }
 }

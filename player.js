@@ -19,8 +19,12 @@ class player {
         this.uuid = uuid;
         this.username = username;
         this.token = token;
+        this.online = true;
     };
     getObjectByName(name){
+        if (!this.online){
+            throw "Trying to access data from a non-online player!";
+        }
         var i;
         for (i = 0; i < this.data.length; i += 1) {
             if (this.data[i].name === name) {
@@ -30,6 +34,9 @@ class player {
         return null; //not found
     };
     getObjectByUUID(uuid){
+        if (!this.online){
+            throw "Trying to access data from a non-online player!";
+        }
         var i;
         for (i = 0; i < this.data.length; i += 1) {
             if (this.data[i].uuid === uuid) {
@@ -39,6 +46,9 @@ class player {
         return null; //not found
     };
     getObjectID(uuid){
+        if (!this.online){
+            throw "Trying to access data from a non-online player!";
+        }
         var i;
         for (i = 0; i < this.data.length; i += 1) {
             if (this.data[i].uuid === uuid) {
@@ -48,9 +58,15 @@ class player {
         return null; //not found
     };
     addObject(object){
+        if (!this.online){
+            throw "Trying to access data from a non-online player!";
+        }
         this.data.push(object)
     };
     removeObject(name = null, uuid = null){
+        if (!this.online){
+            throw "Trying to access data from a non-online player!";
+        }
         if(!name === null){
             var id = this.getObjectID(this.getObjectByName(name));
             if(id === null){
@@ -72,6 +88,10 @@ class player {
     getToken(){
         return this.token;
     };
+    logout(){
+        this.data = Array();
+        this.online = false;
+    }
 }
 exports.object = object;
 exports.player = player;
