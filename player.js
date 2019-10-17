@@ -1,3 +1,8 @@
+let crypto = require('crypto');
+const uuidv1 = require('uuid/v1');
+var jwt = require('jsonwebtoken');
+const settings = require("./confighandler.js").config;
+
 class object {
     constructor(name, uuid, x, y){
         this.name = name;
@@ -11,14 +16,18 @@ class object {
         this.x = x;
         this.y = y;
     };
+    get(){
+        return [this.name, this.uuid, this.x, this.y];
+    }
 }
 
 class player {
-    constructor(username, token, uuid){
+    constructor(username, password){
         this.data = Array();
-        this.uuid = uuid;
+        this._password = crypto.createHash('sha256').update(password).digest('hex');
+        this._token = Array();
+        this.uuid = uuidv1();
         this.username = username;
-        this.token = token;
         this.online = true;
     };
     getObjectByName(name){
@@ -88,9 +97,15 @@ class player {
     getToken(){
         return this.token;
     };
+    login(password){
+        return crypto.createHash('sha256').update(password).digest('hex') === this._password;
+    }
     logout(){
         this.data = Array();
         this.online = false;
+    }
+    getObjects(){
+        return this.data;
     }
 }
 exports.object = object;

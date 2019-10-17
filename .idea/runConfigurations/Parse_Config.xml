@@ -1,0 +1,8 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Parse Config" type="NodeJSConfigurationType" node-parameters="--inspect" path-to-js-file="confighandler.js" working-dir="$PROJECT_DIR$">
+    <EXTENSION ID="com.jetbrains.nodejs.run.NodeJSProfilingRunConfigurationExtension">
+      <profiling allow-runtime-heap-snapshot="true" />
+    </EXTENSION>
+    <method v="2" />
+  </configuration>
+</component>
