@@ -139,6 +139,14 @@ class player {
             return token;
         }
     }
+    verifyPassword(password){
+        return crypto.createHash('sha256').update(password).digest('hex') === this._password;
+    }
+    modifyPassword(token=null, oldPassword=null, newPassword){
+        if(this.verifyToken(token) || this.verifyPassword(oldPassword)){
+            this._password = crypto.createHash('sha256').update(newPassword).digest('hex');
+        }
+    }
     logout(token){
         if(this.verifyToken(token)) {
             this.removeToken(token);
