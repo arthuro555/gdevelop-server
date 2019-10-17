@@ -1,7 +1,7 @@
 let playerClasses = import("./player.js");
 
 
-export default class pmanager {
+class pmanager {
     constructor() {
         this.players = Array;
     }
@@ -94,3 +94,4 @@ export default class pmanager {
         }
     }
 }
+exports.pmanager = pmanager;
