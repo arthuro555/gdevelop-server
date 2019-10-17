@@ -43,7 +43,7 @@ class player {
         this._token = Array();
         this.uuid = uuidv1();
         this.username = username;
-        this.online = true;
+        this.online = false;
     };
     getObjectByName(name){
         if (!this.online){
@@ -150,8 +150,10 @@ class player {
             var tuuid = uuidv4();
             var token = jwt.sign({"username": this.username, "password": password, "tokenUUID":tuuid}, settings["SECRET"]);
             this._token.push([token,tuuid]);
+            this.online = true;
             return token;
         }
+        return false;
     }
     verifyPassword(password){
         return crypto.createHash('sha256').update(password).digest('hex') === this._password;

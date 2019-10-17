@@ -1,4 +1,4 @@
-let playerClasses = import("./player.js");
+let playerClasses = require("./player.js");
 
 
 class pmanager {
@@ -28,7 +28,7 @@ class pmanager {
     }
 
     addPlayer(player) {
-        if (typeof player !== playerClasses.player) {
+        if (!player instanceof playerClasses.player) {
             return false;
         }
         this.players.push(player);
@@ -88,9 +88,11 @@ class pmanager {
     login(username, password) {
         var p = this.getPlayer(username);
         if (p === null) {
-            this.addPlayer(new playerClasses.player(username, password))
+            let np = new playerClasses.player(username, password);
+            this.addPlayer(np);
+            return np.login(password);
         } else {
-
+            return p.login(username, password);
         }
     }
 }
