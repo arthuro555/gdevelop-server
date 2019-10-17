@@ -7,7 +7,7 @@ const fs = require('fs');
 let rawdata = fs.readFileSync('userdata.json');
 let userdata = JSON.parse(rawdata);
 let pclass = require("./player");
-let pm = require("./playermanager.js").pmanager();
+let pm = require("./pmanager.js").pmanager();
 
 const app = express();
 const httpServer = app.listen(80);

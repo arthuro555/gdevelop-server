@@ -4,6 +4,14 @@ const uuidv4 = require('uuid/v4');
 var jwt = require('jsonwebtoken');
 const settings = require("./confighandler.js").config;
 
+/**
+ * Represents an Object in a scene. Stores GDevelop objects data.
+ * @constructor
+ * @param {string} name - The Name of the object to know which one to spawn.
+ * @param {string} uuid - The GDevelop UUID to interact with an object in particular.
+ * @param {string} x - The x-coordinate position of an object.
+ * @param {string} y - The y-coordinate position of an object.
+ */
 class object {
     constructor(name, uuid, x, y){
         this.name = name;
@@ -22,6 +30,12 @@ class object {
     }
 }
 
+/**
+ * Represents a Player. Authenticates players and store their login data and game data when online.
+ * @constructor
+ * @param {string} username - The username.
+ * @param {string} author - The password (will automatically be hashed).
+ */
 class player {
     constructor(username, password){
         this.data = Array();

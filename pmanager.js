@@ -1,20 +1,24 @@
 let playerClasses = import("./player.js");
-class pmanager{
+
+
+export default class pmanager {
     constructor() {
         this.players = Array;
     }
-    getPlayers(){
+
+    getPlayers() {
         return this.players;
     }
-    getPlayer(playerName = null, playerUUID = null){
+
+    getPlayer(playerName = null, playerUUID = null) {
         var i;
         for (i = 0; i < this.players.length; i += 1) {
-            if(!playerUUID === null) {
+            if (!playerUUID === null) {
                 if (this.players[i].uuid === playerUUID) {
                     return this.players[i];
                 }
             }
-            if(!playerName === null) {
+            if (!playerName === null) {
                 if (this.players[i].name === playerName) {
                     return this.players[i];
                 }
@@ -22,67 +26,71 @@ class pmanager{
         }
         return null; //not found
     }
-    addPlayer(player){
-        if(typeof player !== playerClasses.player){
+
+    addPlayer(player) {
+        if (typeof player !== playerClasses.player) {
             return false;
         }
         this.players.push(player);
         return true;
     }
-    setOnline(playerName = null, playerUUID = null){
+
+    setOnline(playerName = null, playerUUID = null) {
         var p = this.getPlayer(playerName, playerUUID);
-        if(p === null){
+        if (p === null) {
             return false;
         }
         p.online = true;
         return true;
     }
-    setOffline(playerName = null, playerUUID = null){
+
+    setOffline(playerName = null, playerUUID = null) {
         var p = this.getPlayer(playerName, playerUUID);
-        if(p === null){
+        if (p === null) {
             return false;
         }
         p.logout();
         return true;
     }
-    getAllObjects(){
+
+    getAllObjects() {
         var ol = Array();
-        for(var p in this.players){
-            for(var o in p.getObjects()){
+        for (var p in this.players) {
+            for (var o in p.getObjects()) {
                 ol.push(o)
             }
         }
-        if (ol.length() === 0){
+        if (ol.length() === 0) {
             return null;
         } else {
             return ol;
         }
     }
-    getObjectForPlayer(playerName = null, playerUUID = null){
+
+    getObjectForPlayer(playerName = null, playerUUID = null) {
         var pl = this.getPlayer(playerName, playerUUID);
         var ol = Array();
-        for(var p in this.players){
-            if(p === pl){
+        for (var p in this.players) {
+            if (p === pl) {
                 continue;
             }
-            for(var o in p.getObjects()){
+            for (var o in p.getObjects()) {
                 ol.push(o)
             }
         }
-        if (ol.length() === 0){
+        if (ol.length() === 0) {
             return null;
         } else {
             return ol;
         }
     }
-    login(username, password){
+
+    login(username, password) {
         var p = this.getPlayer(username);
-        if(p === null){
-            this.addPlayer(new playerClasses.player(username, password,))
+        if (p === null) {
+            this.addPlayer(new playerClasses.player(username, password))
         } else {
 
         }
     }
 }
-
-exports.pmanager = pmanager;
