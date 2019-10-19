@@ -95,5 +95,13 @@ class pmanager {
             return p.login(username, password);
         }
     }
+    logout(username, token){
+        var p = this.getPlayer(username);
+        if (p === null) {
+            return false;
+        }
+        return p.logout(token);
+
+    }
 }
 exports.pmanager = pmanager;

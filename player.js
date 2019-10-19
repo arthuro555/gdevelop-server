@@ -88,7 +88,7 @@ class player {
         if (!this.online){
             throw "Trying to access data from a non-online player!";
         }
-        this.data.push(object)
+        this.data.push(object);
         return true
     };
     removeObject(token, name = null, uuid = null){
