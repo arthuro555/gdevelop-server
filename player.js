@@ -1,3 +1,11 @@
+/**
+ * @fileOverview Definition of players and objects, that will contain the user data.
+ * @author Arthur Pacaud (arthuro555)
+ * @version 0.0.1-dev-in-progress
+ */
+
+
+// Requirements
 let crypto = require('crypto');
 const uuidv1 = require('uuid/v1');
 const uuidv4 = require('uuid/v4');
@@ -13,18 +21,31 @@ const settings = require("./confighandler.js").config;
  * @param {string} y - The y-coordinate position of an object.
  */
 class object {
+    /** @constructor */
     constructor(name, uuid, x, y){
+        /** @type {string} */
         this.name = name;
+        /** @type {string} */
         this.uuid = uuid;
+        /** @type {number} */
         this.x = x;
+        /** @type {number} */
         this.y = y;
     };
     update(name, uuid, x, y){
+        /** @type {string} */
         this.name = name;
+        /** @type {string} */
         this.uuid = uuid;
+        /** @type {number} */
         this.x = x;
+        /** @type {number} */
         this.y = y;
     };
+    /**
+     * Returns all the object data in an Array
+     * @returns {Array}
+     */
     get(){
         return [this.name, this.uuid, this.x, this.y];
     }
@@ -34,16 +55,38 @@ class object {
  * Represents a Player. Authenticates players and store their login data and game data when online.
  * @constructor
  * @param {string} username - The username.
- * @param {string} author - The password (will automatically be hashed).
+ * @param {string} password - The password (will automatically be hashed).
+ * @property {Array} data - An <tt>Array</tt> containing Objects and User data.
+ * @property {string} _password - The user password (Hashed).
+ * @property {Array} _token - An <tt>Array</tt> containing the Authentication tokens.
+ * @property {string} uuid - The <tt>player</tt> Unique ID to distinguish it from other instance.
+ * @property {string} username - The <tt>player</tt> Username.
+ * @property {boolean} online - If the player is not online, this flag will prevent data to be modified.
+ * @property {boolean} moderator - Modify this to true to let this player access Admin features (server-side).
  */
 class player {
+    /** @constructor */
     constructor(username, password){
+        /** @type {Array} */
         this.data = Array();
+        /**
+         * @type {string}
+         * @private
+         */
         this._password = crypto.createHash('sha256').update(password).digest('hex');
+        /**
+         * @type {Array}
+         * @private
+         */
         this._token = Array();
+        /** @type {string} */
         this.uuid = uuidv1();
+        /** @type {string} */
         this.username = username;
+        /** @type {boolean} */
         this.online = false;
+        /** @type {boolean} */
+        this.moderator = false;
     };
     getObjectByName(name){
         if (!this.online){

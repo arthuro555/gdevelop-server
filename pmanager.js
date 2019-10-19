@@ -1,15 +1,39 @@
+/**
+ * @fileOverview A manager that contains all player instances.
+ * @author Arthur Pacaud (arthuro555)
+ * @version 0.0.1-dev-in-progress
+ */
+
+// Requirements
 let playerClasses = require("./player.js");
 
-
+/**
+* The class for managing all the player instances.
+* @class pmanager
+* @property {Array} players The array containing instances of <tt>player</tt>.
+*/
 class pmanager {
+    /** @constructor */
     constructor() {
-        this.players = Array;
+        /** @type {Array} */
+        this.players = Array();
     }
 
+    /**
+     * Get the Array with all the player instances.
+     * @returns {playerClasses.player[]}
+     */
     getPlayers() {
         return this.players;
     }
 
+    /**
+     * Get a <tt>player</tt> Instance from the username or the user UUID.
+     * @param {string} [playerName] The player username
+     * @param {string} [playerUUID] The player UUID
+     * @returns {playerClasses.player}
+     * @returns {null}
+     */
     getPlayer(playerName = null, playerUUID = null) {
         var i;
         for (i = 0; i < this.players.length; i += 1) {
@@ -91,9 +115,8 @@ class pmanager {
             let np = new playerClasses.player(username, password);
             this.addPlayer(np);
             return np.login(password);
-        } else {
-            return p.login(username, password);
         }
+        return p.login(username, password);
     }
     logout(username, token){
         var p = this.getPlayer(username);
