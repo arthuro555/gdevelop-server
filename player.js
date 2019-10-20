@@ -9,7 +9,7 @@
 let crypto = require('crypto');
 const uuidv1 = require('uuid/v1');
 const uuidv4 = require('uuid/v4');
-var jwt = require('jsonwebtoken');
+let jwt = require('jsonwebtoken');
 const settings = require("./confighandler.js").config;
 
 /**
@@ -88,6 +88,13 @@ class player {
         /** @type {boolean} */
         this.moderator = false;
     };
+    /**
+     * Get an <tt>object</tt> by its name (Prefer getObjectByUUID())
+     * @method
+     * @param {string} name - The name variable of the Object
+     * @returns {object | null}
+     * @throws "Trying to access data from a non-online player!"
+     */
     getObjectByName(name){
         if (!this.online){
             throw "Trying to access data from a non-online player!";
@@ -95,11 +102,18 @@ class player {
         var i;
         for (i = 0; i < this.data.length; i += 1) {
             if (this.data[i].name === name) {
-                return i;
+                return this.data[i];
             }
         }
         return null; //not found
     };
+    /**
+     * Get an <tt>object</tt> by its UUID
+     * @method
+     * @param {string} uuid - The uuid variable of the Object
+     * @returns {object | null}
+     * @throws "Trying to access data from a non-online player!"
+     */
     getObjectByUUID(uuid){
         if (!this.online){
             throw "Trying to access data from a non-online player!";
@@ -112,6 +126,13 @@ class player {
         }
         return null; //not found
     };
+    /**
+     * Get an <tt>object</tt>'s ID (mapping in <tt>player</tt> object) by its UUID.
+     * @method
+     * @param {string} uuid - The uuid variable of the Object.
+     * @returns {number | null}
+     * @throws "Trying to access data from a non-online player!"
+     */
     getObjectID(uuid){
         if (!this.online){
             throw "Trying to access data from a non-online player!";
@@ -124,6 +145,14 @@ class player {
         }
         return null; //not found
     };
+    /**
+     * Add an object to the Player.
+     * @method
+     * @param {string} token - The authorization/authentication token.
+     * @param {object} object - The Object to add.
+     * @returns {boolean}
+     * @throws "Trying to access data from a non-online player!"
+     */
     addObject(token, object){
         if(!this.verifyToken(token)){
             return false;
@@ -134,6 +163,14 @@ class player {
         this.data.push(object);
         return true
     };
+    /**
+     * Remove an object from the Player.
+     * @method
+     * @param {string} token - The authorization/authentication token.
+     * @param {string | null} name - The UUID of the object to remove.
+     * @param {string | null} uuid - The name of the object to remove.
+     * @returns {boolean}
+     */
     removeObject(token, name = null, uuid = null){
         if(!this.verifyToken(token)){
             return false;
@@ -159,6 +196,12 @@ class player {
         }
         return false;
     };
+    /**
+     * Verify if a token comes from the player and is valid.
+     * @method
+     * @param {string} token - The authorization/authentication token.
+     * @returns {boolean}
+     */
     verifyToken(token){
         try {
             var exists = false;
@@ -175,6 +218,12 @@ class player {
             return false;
         }
     };
+    /**
+     * Invalidate a Token (Aka Logout).
+     * @method
+     * @param {string} token - The authorization/authentication token.
+     * @returns {boolean}
+     */
     removeToken(token){
         if(this.verifyToken(token)){
             var i;
@@ -187,6 +236,12 @@ class player {
             return false; //not found
         }
     }
+    /**
+     * Verify if a token comes from the <tt>player</tt> and is valid.
+     * @method
+     * @param {string} password - The <tt>player</tt>'s Password
+     * @returns {boolean | string}
+     */
     login(password){
         password = crypto.createHash('sha256').update(password).digest('hex');
         if(password === this._password){
@@ -198,14 +253,36 @@ class player {
         }
         return false;
     }
+    /**
+     * Hashes the input and compare the hash with <tt>this._password</tt>.
+     * @method
+     * @param {string} password - The <tt>player</tt>'s password.
+     * @returns {boolean}
+     */
     verifyPassword(password){
         return crypto.createHash('sha256').update(password).digest('hex') === this._password;
     }
+    /**
+     * Change The <tt>player</tt>'s password. Needs either a valid token or the current password.
+     * @method
+     * @param {string | null} token - The authorization/authentication token.
+     * @param {string | null} oldPassword - The current password.
+     * @param {string} newPassword - The new password.
+     * @returns {boolean}
+     */
     modifyPassword(token=null, oldPassword=null, newPassword){
         if(this.verifyToken(token) || this.verifyPassword(oldPassword)){
             this._password = crypto.createHash('sha256').update(newPassword).digest('hex');
+            return true;
         }
+        return false;
     }
+    /**
+     * Deletes the current Token and set the player to offline.
+     * @method
+     * @param {string} token - The authorization/authentication token.
+     * @returns {boolean}
+     */
     logout(token){
         if(this.verifyToken(token)) {
             this.removeToken(token);
@@ -215,6 +292,11 @@ class player {
         }
         return false;
     }
+    /**
+     * Get an array with all the objects.
+     * @method
+     * @returns {Array}
+     */
     getObjects(){
         return this.data;
     }
