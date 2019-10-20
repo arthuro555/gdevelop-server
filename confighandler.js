@@ -3,7 +3,13 @@ const uuidv4 = require("uuid/v4");
 
 console.log("Loading config...");
 
-let defaultConfig = {"SECRET" : uuidv4()};
+let defaultConfig = {
+    "SECRET" : uuidv4(),
+    "defaultModerator": {
+        "username" : "admin",
+        "password" : "1234"
+    }
+};
 let conf = defaultConfig;
 debugger;
 

@@ -6,6 +6,7 @@
 
 // Requirements
 let playerClasses = require("./player.js");
+const fs = require("fs");
 
 /**
 * The class for managing all the player instances.
@@ -162,4 +163,44 @@ class pmanager {
 
     }
 }
+
+/**
+ * 
+ * @type {{serialize: (function(pmanager=): boolean), load: pmserialize.load}}
+ */
+pmserialize = {
+    /**
+     * Serialize and save the player data in pmanager.
+     * @param {pmanager} [pm]
+     * @returns {boolean}
+     */
+    serialize : function(pm){
+        let serpm = JSON.stringify(pm);
+        fs.writeFileSync("userdata.json", serpm);
+        return true;
+    },
+    /**
+     * Deserialize and load the player data in pmanager.
+     * @returns {pmanager}
+     * @throws "Invalid JSON. Verify for errors or delete userdata.json."
+     */
+    load : function(){
+        if (fs.existsSync('userdata.json')) {
+            try {
+                // noinspection JSCheckFunctionSignatures
+                return JSON.parse(fs.readFileSync("userdata.json"));
+            } catch (e) {
+                if(e instanceof SyntaxError){
+                    throw "Invalid JSON. Verify for errors or delete userdata.json."
+                } else {
+                    console.log("Unknown error while reading userdata.json: " + e);
+                }
+            }
+        } else{
+            console.log('No user data found: creating a clean new one.');
+            return new pmanager();
+        }
+    }
+};
 exports.pmanager = pmanager;
+exports.pmserializer = pmserialize;
