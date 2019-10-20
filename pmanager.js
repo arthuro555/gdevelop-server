@@ -149,9 +149,9 @@ class pmanager {
         if (p === null) {
             let np = new playerClasses.player(username, password);
             this.addPlayer(np);
-            return np.login(np.username, password);
+            return np.login(password);
         }
-        return p.login(username, password);
+        return p.login(password);
     }
     logout(username, token){
         var p = this.getPlayer(username);

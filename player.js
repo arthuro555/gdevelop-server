@@ -179,7 +179,7 @@ class player {
             throw "Trying to access data from a non-online player!";
         }
         if(!name === null){
-            var id = this.getObjectID(this.getObjectByName(name));
+            var id = this.getObjectID(this.getObjectByName(name).uuid);
             if(id === null){
                return false
             }

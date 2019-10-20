@@ -10,6 +10,7 @@ debugger;
 if (fs.existsSync('config.json')) {
     console.log('Loading Existing Config...');
     try {
+        // noinspection JSCheckFunctionSignatures
         conf = JSON.parse(fs.readFileSync("config.json"));
     } catch (e) {
         if(e instanceof SyntaxError){
