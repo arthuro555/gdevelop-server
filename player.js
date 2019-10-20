@@ -15,10 +15,10 @@ const settings = require("./confighandler.js").config;
 /**
  * Represents an Object in a scene. Stores GDevelop objects data.
  * @constructor
- * @param {string} name - The Name of the object to know which one to spawn.
- * @param {string} uuid - The GDevelop UUID to interact with an object in particular.
- * @param {string} x - The x-coordinate position of an object.
- * @param {string} y - The y-coordinate position of an object.
+ * @param {string} [name] - The Name of the object to know which one to spawn.
+ * @param {string} [uuid] - The GDevelop UUID to interact with an object in particular.
+ * @param {string} [x] - The x-coordinate position of an object.
+ * @param {string} [y] - The y-coordinate position of an object.
  */
 class object {
     /** @constructor */
@@ -53,16 +53,16 @@ class object {
 
 /**
  * Represents a Player. Authenticates players and store their login data and game data when online.
- * @constructor
- * @param {string} username - The username.
- * @param {string} password - The password (will automatically be hashed).
- * @property {Array} data - An <tt>Array</tt> containing Objects and User data.
- * @property {string} _password - The user password (Hashed).
- * @property {Array} _token - An <tt>Array</tt> containing the Authentication tokens.
- * @property {string} uuid - The <tt>player</tt> Unique ID to distinguish it from other instance.
- * @property {string} username - The <tt>player</tt> Username.
- * @property {boolean} online - If the player is not online, this flag will prevent data to be modified.
- * @property {boolean} moderator - Modify this to true to let this player access Admin features (server-side).
+ * @class
+ * @param {string} [username] - The username.
+ * @param {string} [password] - The password (will automatically be hashed).
+ * @property {Array} [data] - An <tt>Array</tt> containing Objects and User data.
+ * @property {string} [_password] - The user password (Hashed).
+ * @property {Array} [_token] - An <tt>Array</tt> containing the Authentication tokens.
+ * @property {string} [uuid] - The <tt>player</tt> Unique ID to distinguish it from other instance.
+ * @property {string} [username] - The <tt>player</tt> Username.
+ * @property {boolean} [online] - If the player is not online, this flag will prevent data to be modified.
+ * @property {boolean} [moderator] - Modify this to true to let this player access Admin features (server-side).
  */
 class player {
     /** @constructor */
@@ -91,7 +91,7 @@ class player {
     /**
      * Get an <tt>object</tt> by its name (Prefer getObjectByUUID())
      * @method
-     * @param {string} name - The name variable of the Object
+     * @param {string} [name] - The name variable of the Object
      * @returns {object | null}
      * @throws "Trying to access data from a non-online player!"
      */
@@ -110,7 +110,7 @@ class player {
     /**
      * Get an <tt>object</tt> by its UUID
      * @method
-     * @param {string} uuid - The uuid variable of the Object
+     * @param {string} [uuid] - The uuid variable of the Object
      * @returns {object | null}
      * @throws "Trying to access data from a non-online player!"
      */
@@ -129,7 +129,7 @@ class player {
     /**
      * Get an <tt>object</tt>'s ID (mapping in <tt>player</tt> object) by its UUID.
      * @method
-     * @param {string} uuid - The uuid variable of the Object.
+     * @param {string} [uuid] - The uuid variable of the Object.
      * @returns {number | null}
      * @throws "Trying to access data from a non-online player!"
      */
@@ -148,8 +148,8 @@ class player {
     /**
      * Add an object to the Player.
      * @method
-     * @param {string} token - The authorization/authentication token.
-     * @param {object} object - The Object to add.
+     * @param {string} [token] - The authorization/authentication token.
+     * @param {object} [object] - The Object to add.
      * @returns {boolean}
      * @throws "Trying to access data from a non-online player!"
      */
@@ -167,8 +167,8 @@ class player {
      * Remove an object from the Player.
      * @method
      * @param {string} token - The authorization/authentication token.
-     * @param {string | null} name - The UUID of the object to remove.
-     * @param {string | null} uuid - The name of the object to remove.
+     * @param {string | null} [name] - The UUID of the object to remove.
+     * @param {string | null} [uuid] - The name of the object to remove.
      * @returns {boolean}
      */
     removeObject(token, name = null, uuid = null){
@@ -199,7 +199,7 @@ class player {
     /**
      * Verify if a token comes from the player and is valid.
      * @method
-     * @param {string} token - The authorization/authentication token.
+     * @param {string} [token] - The authorization/authentication token.
      * @returns {boolean}
      */
     verifyToken(token){
@@ -221,7 +221,7 @@ class player {
     /**
      * Invalidate a Token (Aka Logout).
      * @method
-     * @param {string} token - The authorization/authentication token.
+     * @param {string} [token] - The authorization/authentication token.
      * @returns {boolean}
      */
     removeToken(token){
@@ -239,7 +239,7 @@ class player {
     /**
      * Verify if a token comes from the <tt>player</tt> and is valid.
      * @method
-     * @param {string} password - The <tt>player</tt>'s Password
+     * @param {string} [password] - The <tt>player</tt>'s Password
      * @returns {boolean | string}
      */
     login(password){
@@ -256,7 +256,7 @@ class player {
     /**
      * Hashes the input and compare the hash with <tt>this._password</tt>.
      * @method
-     * @param {string} password - The <tt>player</tt>'s password.
+     * @param {string} [password] - The <tt>player</tt>'s password.
      * @returns {boolean}
      */
     verifyPassword(password){
@@ -265,9 +265,9 @@ class player {
     /**
      * Change The <tt>player</tt>'s password. Needs either a valid token or the current password.
      * @method
-     * @param {string | null} token - The authorization/authentication token.
-     * @param {string | null} oldPassword - The current password.
-     * @param {string} newPassword - The new password.
+     * @param {string | null} [token] - The authorization/authentication token.
+     * @param {string | null} [oldPassword] - The current password.
+     * @param {string} [newPassword] - The new password.
      * @returns {boolean}
      */
     modifyPassword(token=null, oldPassword=null, newPassword){
@@ -280,7 +280,7 @@ class player {
     /**
      * Deletes the current Token and set the player to offline.
      * @method
-     * @param {string} token - The authorization/authentication token.
+     * @param {string} [token] - The authorization/authentication token.
      * @returns {boolean}
      */
     logout(token){

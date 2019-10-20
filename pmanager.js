@@ -29,10 +29,10 @@ class pmanager {
 
     /**
      * Get a <tt>player</tt> Instance from the username or the user UUID.
-     * @param {string} [playerName] The player username
-     * @param {string} [playerUUID] The player UUID
-     * @returns {playerClasses.player}
-     * @returns {null}
+     * @method
+     * @param {string | null} [playerName] The player username
+     * @param {string | null} [playerUUID] The player UUID
+     * @returns {playerClasses.player | null}
      */
     getPlayer(playerName = null, playerUUID = null) {
         var i;
@@ -50,7 +50,12 @@ class pmanager {
         }
         return null; //not found
     }
-
+    /**
+     * Add a <tt>player</tt> Instance to The manager.
+     * @method
+     * @param {playerClasses.player} [player] The <tt>player</tt> instance.
+     * @returns {boolean}
+     */
     addPlayer(player) {
         if (!player instanceof playerClasses.player) {
             return false;
@@ -58,7 +63,14 @@ class pmanager {
         this.players.push(player);
         return true;
     }
-
+    /**
+     * Set a <tt>player</tt> Instance to Online.
+     * @method
+     * @param {string | null} [playerName] The <tt>player</tt>'s instance's name.
+     * @param {string | null} [playerUUID] The <tt>player</tt>'s instance's UUID.
+     * @returns {boolean}
+     * @deprecated Use this.login() instead.
+     */
     setOnline(playerName = null, playerUUID = null) {
         var p = this.getPlayer(playerName, playerUUID);
         if (p === null) {
@@ -67,7 +79,14 @@ class pmanager {
         p.online = true;
         return true;
     }
-
+    /**
+     * Set a <tt>player</tt> Instance to Offline.
+     * @method
+     * @param {string | null} [playerName] The <tt>player</tt>'s instance's name.
+     * @param {string | null} [playerUUID] The <tt>player</tt>'s instance's UUID.
+     * @returns {boolean}
+     * @deprecated Use this.logout() instead.
+     */
     setOffline(playerName = null, playerUUID = null) {
         var p = this.getPlayer(playerName, playerUUID);
         if (p === null) {
@@ -76,7 +95,11 @@ class pmanager {
         p.logout();
         return true;
     }
-
+    /**
+     * Get all <tt>objects</tt> of all <tt>players</tt>. Returns null if there are no <tt>objects</tt> on the Scene.
+     * @method
+     * @returns {Array | null}
+     */
     getAllObjects() {
         var ol = Array();
         for (var p in this.players) {
@@ -90,7 +113,13 @@ class pmanager {
             return ol;
         }
     }
-
+    /**
+     * Get all <tt>object</tt> of a specific <tt>player</tt> instance.
+     * @method
+     * @param {string | null} [playerName] The <tt>player</tt>'s instance's name.
+     * @param {string | null} [playerUUID] The <tt>player</tt>'s instance's UUID.
+     * @returns {Array | null}
+     */
     getObjectForPlayer(playerName = null, playerUUID = null) {
         var pl = this.getPlayer(playerName, playerUUID);
         var ol = Array();
@@ -102,19 +131,25 @@ class pmanager {
                 ol.push(o)
             }
         }
-        if (ol.length() === 0) {
+        if (ol.length === 0) {
             return null;
         } else {
             return ol;
         }
     }
-
+    /**
+     * Set a player online and get a token if the authentication successes.
+     * @method
+     * @param {string} [username] The <tt>player</tt>'s username.
+     * @param {string} [password] The <tt>player</tt>'s password.
+     * @returns {string | boolean}
+     */
     login(username, password) {
         var p = this.getPlayer(username);
         if (p === null) {
             let np = new playerClasses.player(username, password);
             this.addPlayer(np);
-            return np.login(password);
+            return np.login(np.username, password);
         }
         return p.login(username, password);
     }

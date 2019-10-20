@@ -1,7 +1,7 @@
 {
   "name": "GDevelop5SocketServer",
   "description": "Server for GDevelop 5 Socket extension",
-  "version": "0.0.1",
+  "version": "0.0.1-dev-in-progress",
   "author": "arthuro555",
   "homepage": "https://github.com/arthuro555/gdevelop-server",
   "license": "MIT",
