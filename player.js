@@ -56,9 +56,9 @@ class object {
  * @class
  * @param {string} [username] - The username.
  * @param {string} [password] - The password (will automatically be hashed).
- * @property {Array} [data] - An <tt>Array</tt> containing Objects and User data.
+ * @property {Array<object>} [data] - An <tt>Array</tt> containing Objects and User data.
  * @property {string} [_password] - The user password (Hashed).
- * @property {Array} [_token] - An <tt>Array</tt> containing the Authentication tokens.
+ * @property {Array<string>} [_token] - An <tt>Array</tt> containing the Authentication tokens.
  * @property {string} [uuid] - The <tt>player</tt> Unique ID to distinguish it from other instance.
  * @property {string} [username] - The <tt>player</tt> Username.
  * @property {boolean} [online] - If the player is not online, this flag will prevent data to be modified.
@@ -67,7 +67,7 @@ class object {
 class player {
     /** @constructor */
     constructor(username, password){
-        /** @type {Array} */
+        /** @type {Array<object>} */
         this.data = Array();
         /**
          * @type {string}
@@ -75,7 +75,7 @@ class player {
          */
         this._password = crypto.createHash('sha256').update(password).digest('hex');
         /**
-         * @type {Array}
+         * @type {Array<string>}
          * @private
          */
         this._token = Array();
@@ -299,6 +299,24 @@ class player {
      */
     getObjects(){
         return this.data;
+    }
+
+    /**
+     * Update objects
+     * @param {string} [token] - The authorization/authentication token.
+     * @param {Array<object>} [objectArray] - An array with all the objects.
+     */
+    updateObjects(token, objectArray){
+        // Auth
+        if(!this.verifyToken(token)){return false}
+        // Validation
+        for(let ob in objectArray){
+            if(!ob instanceof object){
+                return false;
+            }
+        }
+        this.data = objectArray;
+        return true;
     }
 }
 exports.object = object;

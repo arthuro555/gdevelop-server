@@ -165,7 +165,7 @@ class pmanager {
 }
 
 /**
- * 
+ *
  * @type {{serialize: (function(pmanager=): boolean), load: pmserialize.load}}
  */
 pmserialize = {
