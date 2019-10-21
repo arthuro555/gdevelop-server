@@ -1,20 +1,19 @@
 const express = require('express');
 const socketIO = require('socket.io');
-let crypto = require('crypto');
 const wireUpServer = require('socket.io-fix-close');
 const fs = require('fs');
 
 let pclass = require("./player");
-let pms = require("./pmanager.js");
-pms = pms.pmserializer();
-pm = pms.pmserializer.load();
+let pm = require("./pmanager.js");
+pm = new pm.pmanager();
+pm.loadData();
 
 const app = express();
 const httpServer = app.listen(80);
 const io = socketIO(httpServer);
 
 wireUpServer(httpServer, io);
-
+console.log(JSON.stringify(pm));
 console.log("Listening...");
 io.on('connection', function (socket) {
     console.log("Player Connected");
@@ -53,7 +52,10 @@ io.on('connection', function (socket) {
                     io.close();
                     httpServer.close();
                     console.log("Server Closed");
-                    pms.serialize(pm);
+                    for(let p in pm.getPlayers()){
+                        p.logout_force();
+                    }
+                    pm.serialize();
                     console.log("Goodbye!")
                 }
             });
@@ -85,6 +87,9 @@ process.on('SIGINT', function () {
     io.close();
     httpServer.close();
     console.log("Server Closed");
-    fs.writeFileSync('userdata.json', JSON.stringify(userdata));
+    for(let p in pm.getPlayers()){
+        p.logout_force();
+    }
+    pm.serialize();
     process.exit();
 });

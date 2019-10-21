@@ -11,6 +11,5 @@ npm-debug.log
 Dockerfile
 docker-compose.yml
 
-config.json
-*.log
+*.json
 *.log

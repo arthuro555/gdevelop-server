@@ -17,6 +17,7 @@
     "socket.io": "^2.3.0",
     "socket.io-fix-close": "^0.0.2",
     "sqlite3": "^4.1.0",
+    "superserialize": "^1.0.0",
     "uuid": "^3.3.3"
   },
   "optionalDependencies": {

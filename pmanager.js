@@ -7,6 +7,8 @@
 // Requirements
 let playerClasses = require("./player.js");
 const fs = require("fs");
+var serializer = require('superserialize').serialize,
+    deseralizer = require('superserialize').deserialize;
 
 /**
 * The class for managing all the player instances.
@@ -160,47 +162,45 @@ class pmanager {
             return false;
         }
         return p.logout(token);
-
     }
-}
-
-/**
- *
- * @type {{serialize: (function(pmanager=): boolean), load: pmserialize.load}}
- */
-pmserialize = {
     /**
      * Serialize and save the player data in pmanager.
-     * @param {pmanager} [pm]
+     * @method
+     * @param {string} [file]
      * @returns {boolean}
      */
-    serialize : function(pm){
-        let serpm = JSON.stringify(pm);
-        fs.writeFileSync("userdata.json", serpm);
+    serialize(file = "userdata.json"){
+        let players = JSON.stringify(this.players);
+        // console.log(players);
+        fs.writeFileSync("./"+file, players);
         return true;
-    },
+    }
     /**
      * Deserialize and load the player data in pmanager.
-     * @returns {pmanager}
+     * @method
+     * @param {string} [file]
+     * @returns {boolean}
      * @throws "Invalid JSON. Verify for errors or delete userdata.json."
      */
-    load : function(){
-        if (fs.existsSync('userdata.json')) {
+    loadData(file = "userdata.json"){
+        if (fs.existsSync(file)) {
             try {
-                // noinspection JSCheckFunctionSignatures
-                return JSON.parse(fs.readFileSync("userdata.json"));
+                let players = JSON.parse(fs.readFileSync("./"+file));
+                // console.log(players);
+                this.players = players;
+                return true;
             } catch (e) {
                 if(e instanceof SyntaxError){
-                    throw "Invalid JSON. Verify for errors or delete userdata.json."
+                    throw "Invalid JSON. Verify for errors or delete "+file+"."
                 } else {
-                    console.log("Unknown error while reading userdata.json: " + e);
+                    console.log("Unknown error while reading "+file+": " + e);
                 }
             }
         } else{
             console.log('No user data found: creating a clean new one.');
-            return new pmanager();
+            return false;
         }
     }
-};
+}
+
 exports.pmanager = pmanager;
-exports.pmserializer = pmserialize;

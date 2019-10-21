@@ -292,6 +292,16 @@ class player {
         }
         return false;
     }
+
+    /**
+     * Forces the logout with or without token.
+     * @returns {boolean}
+     */
+    logout_force(){
+        this.data = Array();  //Clear all data
+        this.online = false;
+        return true;
+    }
     /**
      * Get an array with all the objects.
      * @method
