@@ -3,6 +3,8 @@
     <EXTENSION ID="com.jetbrains.nodejs.run.NodeJSProfilingRunConfigurationExtension">
       <profiling allow-runtime-heap-snapshot="true" />
     </EXTENSION>
-    <method v="2" />
+    <method v="2">
+      <option name="TypeScript.Before.Run" enabled="true" FAIL_ON_ERROR="true" CONFIG_PATH="" />
+    </method>
   </configuration>
 </component>

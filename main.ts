@@ -2,22 +2,26 @@ const express = require('express');
 const socketIO = require('socket.io');
 const wireUpServer = require('socket.io-fix-close');
 const settings = require("./confighandler.js").config;
+
+
 let pclass = require("./player");
 let pm = require("./pmanager.js");
 pm = new pm.pmanager();
 pm.loadData();
+
 const app = express();
 const httpServer = app.listen(80);
 const io = socketIO(httpServer);
+
 wireUpServer(httpServer, io);
 console.log("Listening...");
-if (!settings["defaultModerator"] === undefined) {
-    if (!settings["defaultModerator"]["username"] === undefined || !settings["defaultModerator"]["password"] === undefined) {
+if(!settings["defaultModerator"] === undefined){
+    if(!settings["defaultModerator"]["username"] === undefined || !settings["defaultModerator"]["password"] === undefined){
         pm.addPlayer(new pclass.player(settings["defaultModerator"]["username"], settings["defaultModerator"]["password"]));
-        console.log("added default player");
+        console.log("added default player")
     }
 }
-pm.addPlayer(new pclass.player("test", "oof"));
+pm.addPlayer(new pclass.player("test","oof"));
 io.on('connection', function (socket) {
     console.log("Player Connected");
     socket.on('disconnect', function (data) {
@@ -31,19 +35,22 @@ io.on('connection', function (socket) {
         if (token === false) {
             console.log("Auth. Failed for " + u + "!.");
             socket.emit("AuthFail", true);
-        }
-        else {
+        } else {
             console.log(u + " logged in.");
             socket.emit("AuthSuccess", token);
+
             // SOCKET.ON DEFINITIONS HERE
+
+
             socket.on('disconnect', function (data) {
                 console.log(data["username"] + " disconnected.");
-                if (!pm.logout(data["username"], data["token"])) {
+                if(!pm.logout(data["username"], data["token"])){
                     console.error("Error while logging out.");
                     console.warn("THIS IS NOT A NORMAL ERROR. SOMEONE IS INTENTIONALLY TRYING TO CRASH OR TAKE CONTROL OF THE SERVER!!!");
                     console.warn("You should shut down the server as soon as possible or ban the user provoking this.");
                 }
             });
+
             socket.on("off", function (data) {
                 if (pm.getPlayer(data["username"]).moderator) {
                     // Try to close the server a clean way
@@ -52,31 +59,35 @@ io.on('connection', function (socket) {
                     io.close();
                     httpServer.close();
                     console.log("Server Closed");
-                    for (let p of pm.getPlayers()) {
+                    for(let p of pm.getPlayers()){
                         p.logout_force();
                     }
                     pm.serialize();
-                    console.log("Goodbye!");
+                    console.log("Goodbye!")
                 }
             });
+
             socket.on("updateTick", function (data) {
                 let p = pm.getPlayer(data["username"]);
                 p.updateObjects(data["token"], data["data"]);
                 socket.emit("tickUpdate", pm.getAllObjects());
-            });
+            })
         }
-    });
+    })
 });
+
 if (process.platform === "win32") {
     var rl = require("readline").createInterface({
         input: process.stdin,
         output: process.stdout
     });
+
     rl.on("SIGINT", function () {
         // @ts-ignore
         process.emit("SIGINT");
     });
 }
+
 process.on('SIGINT', function () {
     console.log("Caught interrupt signal");
     io.emit("Closing", true);
@@ -84,10 +95,9 @@ process.on('SIGINT', function () {
     io.close();
     httpServer.close();
     console.log("Server Closed");
-    for (let p of pm.getPlayers()) {
+    for(let p of pm.getPlayers()){
         p.logout_force();
     }
     pm.serialize();
     process.exit();
 });
-//# sourceMappingURL=main.js.map

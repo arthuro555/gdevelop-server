@@ -6,15 +6,16 @@
   "homepage": "https://github.com/arthuro555/gdevelop-server",
   "license": "MIT",
   "bin": {
-    "gdsockserver": "./main.js"
+    "gdsockserver": "main.ts"
   },
-  "main": "main.js",
+  "main": "main.ts",
   "private": true,
   "dependencies": {
     "express": "^4.17.1",
     "jsonwebtoken": "^8.5.1",
     "socket.io": "^2.3.0",
     "socket.io-fix-close": "^0.0.2",
+    "typescript": "^3.6.4",
     "uuid": "^3.3.3"
   },
   "optionalDependencies": {

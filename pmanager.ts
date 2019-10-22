@@ -1,24 +1,26 @@
-"use strict";
 /**
  * @fileOverview A manager that contains all player instances.
  * @author Arthur Pacaud (arthuro555)
  * @version 0.0.1-dev-in-progress
  */
-Object.defineProperty(exports, "__esModule", { value: true });
+
 // Requirements
-const player_1 = require("./player");
-const fs = require("fs");
+import { player, gdobject } from "./player"
+import fs = require("fs");
+
 /**
 * The class for managing all the player instances.
 * @class pmanager
 * @property {Array<player>} players The array containing instances of <tt>player</tt>.
 */
 class pmanager {
+    private players: player[];
     /** @constructor */
     constructor() {
         /** @type {Array<player>} */
         this.players = Array();
     }
+
     /**
      * Get the Array with all the player instances.
      * @returns {player[]}
@@ -26,6 +28,7 @@ class pmanager {
     getPlayers() {
         return this.players;
     }
+
     /**
      * Get a <tt>player</tt> Instance from the username or the user UUID.
      * @method
@@ -33,7 +36,7 @@ class pmanager {
      * @param {string | null} [playerUUID] The player UUID
      * @returns {player | null}
      */
-    getPlayer(playerName = null, playerUUID = null) {
+    getPlayer(playerName:string = null, playerUUID:string = null) {
         var i;
         for (i = 0; i < this.players.length; i += 1) {
             if (!playerUUID === null) {
@@ -55,7 +58,7 @@ class pmanager {
      * @param {player} [player] The <tt>player</tt> instance.
      * @returns {boolean}
      */
-    addPlayer(player) {
+    addPlayer(player:player) {
         this.players[this.players.length] = player;
         return true;
     }
@@ -67,7 +70,7 @@ class pmanager {
      * @returns {boolean}
      * @deprecated Use this.login() instead.
      */
-    setOnline(playerName = null, playerUUID = null) {
+    setOnline(playerName:string = null, playerUUID:string = null) {
         var p = this.getPlayer(playerName, playerUUID);
         if (p === null) {
             return false;
@@ -83,8 +86,8 @@ class pmanager {
      * @returns {boolean}
      * @deprecated Use this.logout() instead.
      */
-    setOffline(playerName = null, playerUUID = null) {
-        let p = this.getPlayer(playerName, playerUUID);
+    setOffline(playerName:string = null, playerUUID:string = null) {
+        let p:player = this.getPlayer(playerName, playerUUID);
         if (p === null) {
             return false;
         }
@@ -97,18 +100,17 @@ class pmanager {
      * @returns {Array | null}
      */
     getAllObjects() {
-        let ol = Array();
-        let p = undefined;
-        let o = undefined;
+        let ol:gdobject[] = Array();
+        let p:player = undefined;
+        let o:gdobject = undefined;
         for (p of this.players) {
             for (o of p.data) {
-                ol.push(o);
+                ol.push(o)
             }
         }
         if (ol.length === 0) {
             return null;
-        }
-        else {
+        } else {
             return ol;
         }
     }
@@ -127,13 +129,12 @@ class pmanager {
                 continue;
             }
             for (var o in p.getObjects()) {
-                ol.push(o);
+                ol.push(o)
             }
         }
         if (ol.length === 0) {
             return null;
-        }
-        else {
+        } else {
             return ol;
         }
     }
@@ -147,13 +148,13 @@ class pmanager {
     login(username, password) {
         var p = this.getPlayer(username);
         if (p === null) {
-            let np = new player_1.player(username, password);
+            let np = new player(username, password);
             this.addPlayer(np);
             return np.login(password);
         }
         return p.login(password);
     }
-    logout(username, token) {
+    logout(username, token){
         var p = this.getPlayer(username);
         if (p === null) {
             return false;
@@ -166,15 +167,15 @@ class pmanager {
      * @param {string} [file]
      * @returns {boolean}
      */
-    serialize(file = "userdata.json") {
-        let i = 0;
-        let players = [];
-        for (let p of this.players) {
-            players[i] = player_1.player.serialize(p);
+    serialize(file = "userdata.json"){
+        let i:number = 0;
+        let players:string[] = [];
+        for(let p of this.players){
+            players[i] = <string>player.serialize(p);
             i++;
         }
         console.log(players);
-        fs.writeFileSync("./" + file, JSON.stringify(players));
+        fs.writeFileSync("./"+file, JSON.stringify(players));
         return true;
     }
     /**
@@ -184,36 +185,33 @@ class pmanager {
      * @returns {boolean}
      * @throws "Invalid JSON. Verify for errors or delete userdata.json."
      */
-    loadData(file = "userdata.json") {
+    loadData(file = "userdata.json"){
         if (fs.existsSync(file)) {
             try {
                 let i = 0;
                 // @ts-ignore
-                let players = JSON.parse(fs.readFileSync("./" + file));
-                let pl = Array(players.length);
-                for (let p of players) {
-                    pl[i] = new player_1.player("none", "");
-                    player_1.player.loadData(pl[i], p);
+                let players = JSON.parse(fs.readFileSync("./"+file));
+                let pl:player[] = Array(players.length);
+                for(let p of players){
+                    pl[i] = new player("none", "");
+                    player.loadData(pl[i], p);
                     i++;
                 }
                 // console.log(players);
                 this.players = pl;
                 return true;
-            }
-            catch (e) {
-                if (e instanceof SyntaxError) {
-                    throw "Invalid JSON. Verify for errors or delete " + file + ".";
-                }
-                else {
-                    console.log("Unknown error while reading " + file + ": " + e);
+            } catch (e) {
+                if(e instanceof SyntaxError){
+                    throw "Invalid JSON. Verify for errors or delete "+file+"."
+                } else {
+                    console.log("Unknown error while reading "+file+": " + e);
                 }
             }
-        }
-        else {
+        } else{
             console.log('No user data found: creating a clean new one.');
             return false;
         }
     }
 }
+
 exports.pmanager = pmanager;
-//# sourceMappingURL=pmanager.js.map

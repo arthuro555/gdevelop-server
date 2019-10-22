@@ -1,41 +1,43 @@
 const fs = require("fs");
 const uuidv4 = require("uuid/v4");
+
 console.log("Loading config...");
+
 let defaultConfig = {
-    "SECRET": uuidv4(),
+    "SECRET" : uuidv4(),
     "defaultModerator": {
-        "username": "admin",
-        "password": "1234"
+        "username" : "admin",
+        "password" : "1234"
     }
 };
 let conf = defaultConfig;
 debugger;
+
 if (fs.existsSync('config.json')) {
     console.log('Loading Existing Config...');
     try {
         // noinspection JSCheckFunctionSignatures
         conf = JSON.parse(fs.readFileSync("config.json"));
-    }
-    catch (e) {
-        if (e instanceof SyntaxError) {
+    } catch (e) {
+        if(e instanceof SyntaxError){
             console.log("Invalid JSON. Re-Creating Default config.");
             conf = defaultConfig;
             fs.writeFileSync('config.json', JSON.stringify(conf));
-        }
-        else {
+        } else {
             console.log("Unknown error while reading config.json: " + e);
         }
     }
-}
-else {
+} else{
     console.log('Creating New Default Config...');
     conf = defaultConfig;
     fs.writeFileSync('config.json', JSON.stringify(conf));
 }
-if (conf["SECRET"] === undefined) {
+
+
+if(conf["SECRET"] === undefined){
     console.log("Invalid Config. Creating A new one.");
     conf = defaultConfig;
     fs.writeFileSync('config.json', JSON.stringify(conf));
 }
+
 exports.config = conf;
-//# sourceMappingURL=confighandler.js.map
