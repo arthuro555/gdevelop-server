@@ -3,6 +3,7 @@ const socketIO = require('socket.io');
 const wireUpServer = require('socket.io-fix-close');
 const fs = require('fs');
 
+const settings = require("./confighandler.js").config;
 let pclass = require("./player");
 let pm = require("./pmanager.js");
 pm = new pm.pmanager();
@@ -13,8 +14,12 @@ const httpServer = app.listen(80);
 const io = socketIO(httpServer);
 
 wireUpServer(httpServer, io);
-console.log(JSON.stringify(pm));
 console.log("Listening...");
+if(!settings["defaultModerator"] === undefined){
+    if(!settings["defaultModerator"]["username"] === undefined || !settings["defaultModerator"]["password"] === undefined){
+        pm.addPlayer(pclass.player(settings["defaultModerator"]["username"], settings["defaultModerator"]["password"]));
+    }
+}
 io.on('connection', function (socket) {
     console.log("Player Connected");
     socket.on('disconnect', function (data) {

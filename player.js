@@ -328,6 +328,32 @@ class player {
         this.data = objectArray;
         return true;
     }
+    /**
+     * Serialize and returns the player data.
+     * @method
+     * @param {player} [playerInstance] - The player instance where the data should be loaded from.
+     * @returns {Array}
+     */
+    static serialize(playerInstance){
+        let data = {};
+        data["username"] = playerInstance.username;
+        data["password"] = playerInstance._password;
+        data["moderator"] = playerInstance.moderator;
+        return data;
+    }
+    /**
+     * Loads player data from an array.
+     * @method
+     * @param {player} [playerInstance] - The player instance where the data should be loaded.
+     * @param {Array} [data] - The serialized player data.
+     * @returns {boolean}
+     */
+    static loadData(playerInstance, data){
+        playerInstance.username = data["username"];
+        playerInstance._password = data["password"];
+        playerInstance.moderator = data["moderator"];
+        return true;
+    }
 }
 exports.object = object;
 exports.player = player;

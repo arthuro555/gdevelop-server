@@ -7,18 +7,16 @@
 // Requirements
 let playerClasses = require("./player.js");
 const fs = require("fs");
-var serializer = require('superserialize').serialize,
-    deseralizer = require('superserialize').deserialize;
 
 /**
 * The class for managing all the player instances.
 * @class pmanager
-* @property {Array} players The array containing instances of <tt>player</tt>.
+* @property {Array<playerClasses.player>} players The array containing instances of <tt>player</tt>.
 */
 class pmanager {
     /** @constructor */
     constructor() {
-        /** @type {Array} */
+        /** @type {Array<playerClasses.player>} */
         this.players = Array();
     }
 
@@ -170,9 +168,14 @@ class pmanager {
      * @returns {boolean}
      */
     serialize(file = "userdata.json"){
-        let players = JSON.stringify(this.players);
-        // console.log(players);
-        fs.writeFileSync("./"+file, players);
+        let i = 0;
+        let players = [];
+        for(let p in this.players){
+            players[i] = playerClasses.player.serialize(p);
+            i++;
+        }
+        console.log(players);
+        fs.writeFileSync("./"+file, JSON.stringify(players));
         return true;
     }
     /**
@@ -185,9 +188,15 @@ class pmanager {
     loadData(file = "userdata.json"){
         if (fs.existsSync(file)) {
             try {
+                let i = 0;
                 let players = JSON.parse(fs.readFileSync("./"+file));
+                let pl = Array<playerClasses.player>(players.length);
+                for(let p in players){
+                    pl[i] = playerClasses.player.loadData(new playerClasses.player("none", ""),p);
+                    i++;
+                }
                 // console.log(players);
-                this.players = players;
+                this.players = Array<playerClasses.player>(pl);
                 return true;
             } catch (e) {
                 if(e instanceof SyntaxError){
