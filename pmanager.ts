@@ -55,11 +55,21 @@ class pmanager {
     /**
      * Add a <tt>player</tt> Instance to The manager.
      * @method
-     * @param {player} [player] The <tt>player</tt> instance.
+     * @param {player} [playerInstance] The <tt>player</tt> instance.
      * @returns {boolean}
      */
-    addPlayer(player:player) {
-        this.players[this.players.length] = player;
+    addPlayer(playerInstance:player) {
+        let players:player[] = this.getPlayers();
+        for(let p of players){
+            if(p.uuid === playerInstance.uuid){
+                console.error("Tried to add an already existing player to the player manager!");
+                return false
+            }
+            if(p.username === playerInstance.username){
+                console.warn("An user with the same username as an existing one is being added! Is this Normal?")
+            }
+        }
+        this.players[this.players.length] = playerInstance;
         return true;
     }
     /**
@@ -198,7 +208,9 @@ class pmanager {
                     i++;
                 }
                 // console.log(players);
-                this.players = pl;
+                for(let p of pl){
+                    this.addPlayer(p);
+                }
                 return true;
             } catch (e) {
                 if(e instanceof SyntaxError){
