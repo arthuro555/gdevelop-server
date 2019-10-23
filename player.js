@@ -347,6 +347,7 @@ class player {
     static serialize(playerInstance) {
         let data = {};
         data["username"] = playerInstance.username;
+        data["uuid"] = playerInstance.uuid;
         data["password"] = playerInstance._password;
         data["moderator"] = playerInstance.moderator;
         return data;
@@ -360,6 +361,7 @@ class player {
      */
     static loadData(playerInstance, data) {
         playerInstance.username = data["username"];
+        playerInstance.uuid = data["uuid"];
         playerInstance._password = data["password"];
         playerInstance.moderator = data["moderator"];
         return true;
