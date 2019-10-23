@@ -12,20 +12,22 @@ const io = socketIO(httpServer);
 wireUpServer(httpServer, io);
 console.log("Listening...");
 if (!settings["defaultModerator"] === undefined) {
-    if (!settings["defaultModerator"]["username"] === undefined || !settings["defaultModerator"]["password"] === undefined) {
-        pm.addPlayer(new pclass.player(settings["defaultModerator"]["username"], settings["defaultModerator"]["password"]));
-        console.log("added default player");
+    if (!settings["defaultModerator"]["username"] === undefined) {
+        if (!settings["defaultModerator"]["password"] === undefined) {
+            pm.addPlayer(new pclass.player(settings["defaultModerator"]["username"], settings["defaultModerator"]["password"], true));
+            console.log("added default player");
+        }
     }
 }
 pm.addPlayer(new pclass.player("test", "oof"));
 io.on('connection', function (socket) {
     console.log("Player Connected");
-    socket.on('disconnect', function (data) {
+    socket.on('disconnect', function () {
         console.log("Non Logged-in player disconnected.");
     });
     socket.on('auth', function (data) {
-        var p = data["password"];
-        var u = data["username"];
+        let p = data["password"];
+        let u = data["username"];
         console.log(u + " is trying to log in...");
         let token = pm.login(u, p);
         if (token === false) {
@@ -68,7 +70,7 @@ io.on('connection', function (socket) {
     });
 });
 if (process.platform === "win32") {
-    var rl = require("readline").createInterface({
+    let rl = require("readline").createInterface({
         input: process.stdin,
         output: process.stdout
     });

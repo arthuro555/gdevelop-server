@@ -2,6 +2,7 @@
   <dictionary name="pc">
     <words>
       <w>arthuro</w>
+      <w>confighandler</w>
       <w>pacaud</w>
       <w>pmanager</w>
       <w>pmserialize</w>

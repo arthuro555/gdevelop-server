@@ -5,15 +5,16 @@
  */
 
 // Requirements
-import { player, gdobject } from "./player"
-import fs = require("fs");
+const fs = require("fs");
+import { player, gdobject } from "./player";
+const config = require("./confighandler.js").config;
 
 /**
 * The class for managing all the player instances.
 * @class pmanager
 * @property {Array<player>} players The array containing instances of <tt>player</tt>.
 */
-class pmanager {
+export class pmanager {
     private players: player[];
     /** @constructor */
     constructor() {
@@ -37,7 +38,7 @@ class pmanager {
      * @returns {player | null}
      */
     getPlayer(playerName:string = null, playerUUID:string = null) {
-        var i;
+        let i;
         for (i = 0; i < this.players.length; i += 1) {
             if (!playerUUID === null) {
                 if (this.players[i].uuid === playerUUID) {
@@ -69,6 +70,9 @@ class pmanager {
                 console.warn("An user with the same username as an existing one is being added! Is this Normal?")
             }
         }
+        if(playerInstance.isMod()){
+            console.info("New Moderator Registered: " + playerInstance.username);
+        }
         this.players[this.players.length] = playerInstance;
         return true;
     }
@@ -81,7 +85,7 @@ class pmanager {
      * @deprecated Use this.login() instead.
      */
     setOnline(playerName:string = null, playerUUID:string = null) {
-        var p = this.getPlayer(playerName, playerUUID);
+        let p = this.getPlayer(playerName, playerUUID);
         if (p === null) {
             return false;
         }
@@ -113,7 +117,7 @@ class pmanager {
         let ol:gdobject[] = Array();
         let p:player = undefined;
         let o:gdobject = undefined;
-        for (p of this.players) {
+        for (let p of this.players) {
             for (o of p.data) {
                 ol.push(o)
             }
@@ -132,13 +136,13 @@ class pmanager {
      * @returns {Array | null}
      */
     getObjectForPlayer(playerName = null, playerUUID = null) {
-        var pl = this.getPlayer(playerName, playerUUID);
-        var ol = Array();
-        for (var p of this.players) {
+        let pl = this.getPlayer(playerName, playerUUID);
+        let ol = Array();
+        for (let p of this.players) {
             if (p === pl) {
                 continue;
             }
-            for (var o in p.getObjects()) {
+            for (let o in p.getObjects()) {
                 ol.push(o)
             }
         }
@@ -156,7 +160,7 @@ class pmanager {
      * @returns {string | boolean}
      */
     login(username, password) {
-        var p = this.getPlayer(username);
+        let p = this.getPlayer(username);
         if (p === null) {
             let np = new player(username, password);
             this.addPlayer(np);
@@ -165,7 +169,7 @@ class pmanager {
         return p.login(password);
     }
     logout(username, token){
-        var p = this.getPlayer(username);
+        let p = this.getPlayer(username);
         if (p === null) {
             return false;
         }
@@ -185,7 +189,7 @@ class pmanager {
             i++;
         }
         console.log(players);
-        fs.writeFileSync("./"+file, JSON.stringify(players));
+        fs.writeFileSync("./"+file, JSON.stringify(players, null, 4));
         return true;
     }
     /**

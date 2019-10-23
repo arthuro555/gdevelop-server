@@ -6,8 +6,9 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 // Requirements
-const player_1 = require("./player");
 const fs = require("fs");
+const player_1 = require("./player");
+const config = require("./confighandler.js").config;
 /**
 * The class for managing all the player instances.
 * @class pmanager
@@ -34,7 +35,7 @@ class pmanager {
      * @returns {player | null}
      */
     getPlayer(playerName = null, playerUUID = null) {
-        var i;
+        let i;
         for (i = 0; i < this.players.length; i += 1) {
             if (!playerUUID === null) {
                 if (this.players[i].uuid === playerUUID) {
@@ -66,6 +67,9 @@ class pmanager {
                 console.warn("An user with the same username as an existing one is being added! Is this Normal?");
             }
         }
+        if (playerInstance.isMod()) {
+            console.info("New Moderator Registered: " + playerInstance.username);
+        }
         this.players[this.players.length] = playerInstance;
         return true;
     }
@@ -78,7 +82,7 @@ class pmanager {
      * @deprecated Use this.login() instead.
      */
     setOnline(playerName = null, playerUUID = null) {
-        var p = this.getPlayer(playerName, playerUUID);
+        let p = this.getPlayer(playerName, playerUUID);
         if (p === null) {
             return false;
         }
@@ -110,7 +114,7 @@ class pmanager {
         let ol = Array();
         let p = undefined;
         let o = undefined;
-        for (p of this.players) {
+        for (let p of this.players) {
             for (o of p.data) {
                 ol.push(o);
             }
@@ -130,13 +134,13 @@ class pmanager {
      * @returns {Array | null}
      */
     getObjectForPlayer(playerName = null, playerUUID = null) {
-        var pl = this.getPlayer(playerName, playerUUID);
-        var ol = Array();
-        for (var p of this.players) {
+        let pl = this.getPlayer(playerName, playerUUID);
+        let ol = Array();
+        for (let p of this.players) {
             if (p === pl) {
                 continue;
             }
-            for (var o in p.getObjects()) {
+            for (let o in p.getObjects()) {
                 ol.push(o);
             }
         }
@@ -155,7 +159,7 @@ class pmanager {
      * @returns {string | boolean}
      */
     login(username, password) {
-        var p = this.getPlayer(username);
+        let p = this.getPlayer(username);
         if (p === null) {
             let np = new player_1.player(username, password);
             this.addPlayer(np);
@@ -164,7 +168,7 @@ class pmanager {
         return p.login(password);
     }
     logout(username, token) {
-        var p = this.getPlayer(username);
+        let p = this.getPlayer(username);
         if (p === null) {
             return false;
         }
@@ -184,7 +188,7 @@ class pmanager {
             i++;
         }
         console.log(players);
-        fs.writeFileSync("./" + file, JSON.stringify(players));
+        fs.writeFileSync("./" + file, JSON.stringify(players, null, 4));
         return true;
     }
     /**
@@ -227,5 +231,6 @@ class pmanager {
         }
     }
 }
+exports.pmanager = pmanager;
 exports.pmanager = pmanager;
 //# sourceMappingURL=pmanager.js.map

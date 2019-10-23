@@ -339,6 +339,13 @@ class player {
         return true;
     }
     /**
+     * Check if is a moderator.
+     * @return {boolean}
+     */
+    isMod() {
+        return this.moderator;
+    }
+    /**
      * Serialize and returns the player data.
      * @method
      * @param {player} [playerInstance] - The player instance where the data should be loaded from.

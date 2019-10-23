@@ -338,6 +338,14 @@ export class player {
         this.data = objectArray;
         return true;
     }
+
+    /**
+     * Check if is a moderator.
+     * @return {boolean}
+     */
+    isMod(){
+        return this.moderator;
+    }
     /**
      * Serialize and returns the player data.
      * @method
