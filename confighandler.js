@@ -1,16 +1,21 @@
 "use strict";
+/**
+ * @fileOverview A configuration parser.
+ * @author Arthur Pacaud (arthuro555)
+ * @version 0.0.1-dev-in-progress
+ */
 Object.defineProperty(exports, "__esModule", { value: true });
-const fs = require("fs");
-const uuidv4 = require("uuid/v4");
+var fs = require("fs");
+var uuidv4 = require("uuid/v4");
 /**
  * A class to load/handle the config.json file.
  * @class
  * @protected {Array} [defaultConfig] - The default config.
  * @public {Array} [config] - The actual config
  */
-class config {
+var config = /** @class */ (function () {
     /** @constructor*/
-    constructor() {
+    function config() {
         this.requiredConfig = [
             "SECRET",
             "Verbose",
@@ -69,7 +74,8 @@ class config {
         this.defaultSettingVerifier("Verbose");
         this.checkSettings(this.conf["Verbose"]);
     }
-    defaultSettingVerifier(settingName, verbose = false) {
+    config.prototype.defaultSettingVerifier = function (settingName, verbose) {
+        if (verbose === void 0) { verbose = false; }
         if (verbose) {
             console.log("Checking config: " + settingName);
         }
@@ -80,21 +86,25 @@ class config {
             console.warn("WARN: 'Invalid Config. Using default value.' in '" + settingName + "'.");
             this.conf[settingName] = this.defaultConfig[settingName];
         }
-    }
-    checkSettings(verbose = false) {
-        for (let s of this.requiredConfig) {
+    };
+    config.prototype.checkSettings = function (verbose) {
+        if (verbose === void 0) { verbose = false; }
+        for (var _i = 0, _a = this.requiredConfig; _i < _a.length; _i++) {
+            var s = _a[_i];
             this.checkSetting(s, verbose);
         }
-    }
-    checkSetting(setting, verbose = false) {
+    };
+    config.prototype.checkSetting = function (setting, verbose) {
+        if (verbose === void 0) { verbose = false; }
         if (setting in this.customConfigVerifier) {
             this.customConfigVerifier[setting].call(this, verbose);
         }
         else {
             this.defaultSettingVerifier(setting, verbose);
         }
-    }
-    securityRulesVerifier(verbose = false) {
+    };
+    config.prototype.securityRulesVerifier = function (verbose) {
+        if (verbose === void 0) { verbose = false; }
         if (this.conf["Security Rules"] === undefined) {
             console.warn("WARN: 'Invalid Config. Using default value.' in 'Security Rules'.");
             this.conf["Security Rules"] = this.defaultConfig["Security Rules"];
@@ -116,14 +126,15 @@ class config {
             console.warn("WARN: 'Invalid Config. Using default value.' in 'Security Rules/warnOnDuplicateUUID'.");
             this.conf["Security Rules"]["warnOnDuplicateUUID"] = this.defaultConfig["warnOnDuplicateUUID"];
         }
-    }
-    defaultUsersVerifier(verbose = false) {
+    };
+    config.prototype.defaultUsersVerifier = function (verbose) {
+        if (verbose === void 0) { verbose = false; }
         if (this.conf["defaultUsers"] === undefined) {
             console.warn("WARN: 'Invalid Config. Using default value.' in 'Security Rules'.");
             this.conf["defaultUsers"] = this.defaultConfig["defaultUsers"];
             return;
         }
-        for (let key in this.conf["defaultUsers"].keys()) {
+        for (var key in this.conf["defaultUsers"].keys()) {
             if (this.conf["defaultUsers"][key]["username"] === undefined) {
                 console.warn("WARN: 'Invalid Config. Can't load one of the users in defaultUsers.");
                 delete conf["defaultUsers"][key];
@@ -137,11 +148,11 @@ class config {
                 delete conf["defaultUsers"][key];
             }
         }
-    }
-}
+    };
+    return config;
+}());
 exports.config = config;
-let conf = new config();
+var conf = new config();
 exports.configClass = config;
 exports.configInstance = conf;
 exports.config = conf.conf;
-//# sourceMappingURL=confighandler.js.map

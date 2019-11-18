@@ -1,3 +1,9 @@
+/**
+ * @fileOverview The server part of the project.
+ * @author Arthur Pacaud (arthuro555)
+ * @version 0.0.1-dev-in-progress
+ */
+
 const express = require('express');
 const socketIO = require('socket.io');
 const wireUpServer = require('socket.io-fix-close');

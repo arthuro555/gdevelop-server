@@ -1,3 +1,9 @@
+/**
+ * @fileOverview A configuration parser.
+ * @author Arthur Pacaud (arthuro555)
+ * @version 0.0.1-dev-in-progress
+ */
+
 const fs = require("fs");
 const uuidv4 = require("uuid/v4");
 

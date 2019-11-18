@@ -1,11 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 // Requirements
-let cryptog = require('crypto');
-const uuidv1 = require('uuid/v1');
-const uuidv4 = require('uuid/v4');
-let jwt = require('jsonwebtoken');
-const settings = require("./confighandler.js").config;
+var cryptog = require('crypto');
+var uuidv1 = require('uuid/v1');
+var uuidv4 = require('uuid/v4');
+var jwt = require('jsonwebtoken');
+var settings = require("./confighandler.js").config;
 /**
  * Represents an Object in a scene. Stores GDevelop objects object_data.
  * @class
@@ -14,9 +14,9 @@ const settings = require("./confighandler.js").config;
  * @param {number} [x] - The x-coordinate position of an object.
  * @param {number} [y] - The y-coordinate position of an object.
  */
-class gdobject {
+var gdobject = /** @class */ (function () {
     /** @constructor */
-    constructor(name, uuid, x, y) {
+    function gdobject(name, uuid, x, y) {
         /** @type {string} */
         this.name = name;
         /** @type {string} */
@@ -27,7 +27,7 @@ class gdobject {
         this.y = y;
     }
     ;
-    update(name, uuid, x, y) {
+    gdobject.prototype.update = function (name, uuid, x, y) {
         /** @type {string} */
         this.name = name;
         /** @type {string} */
@@ -36,16 +36,17 @@ class gdobject {
         this.x = x;
         /** @type {number} */
         this.y = y;
-    }
+    };
     ;
     /**
      * Returns all the gdobjects object_data in an Array
      * @returns {Array}
      */
-    get() {
+    gdobject.prototype.get = function () {
         return [this.name, this.uuid, this.x, this.y];
-    }
-}
+    };
+    return gdobject;
+}());
 exports.gdobject = gdobject;
 /**
  * Represents a Player. Authenticates players and store their login object_data and game object_data when online.
@@ -62,9 +63,10 @@ exports.gdobject = gdobject;
  * @property {boolean} [moderator] - Modify this to true to let this player access Admin features (server-side).
  * @property {Array<string>} [socket_id] - Permits to identify if a socket is the owner of an account.
  */
-class player {
+var player = /** @class */ (function () {
     /** @constructor */
-    constructor(username, password, moderator = false) {
+    function player(username, password, moderator) {
+        if (moderator === void 0) { moderator = false; }
         /** @type {Array<gdobject>} */
         this.object_data = [];
         /**
@@ -96,18 +98,18 @@ class player {
      * @returns {gdobject | null}
      * @throws "Trying to access object_data from a non-online player!"
      */
-    getObjectByName(name) {
+    player.prototype.getObjectByName = function (name) {
         if (!this.online) {
             throw "Trying to access object_data from a non-online player!";
         }
-        let i;
+        var i;
         for (i = 0; i < this.object_data.length; i += 1) {
             if (this.object_data[i].name === name) {
                 return this.object_data[i];
             }
         }
         return null; //not found
-    }
+    };
     ;
     /**
      * Get an <tt>gdobject</tt> by its UUID
@@ -116,18 +118,18 @@ class player {
      * @returns {gdobject | null}
      * @throws "Trying to access object_data from a non-online player!"
      */
-    getObjectByUUID(uuid) {
+    player.prototype.getObjectByUUID = function (uuid) {
         if (!this.online) {
             throw "Trying to access object_data from a non-online player!";
         }
-        let i;
+        var i;
         for (i = 0; i < this.object_data.length; i += 1) {
             if (this.object_data[i].uuid === uuid) {
                 return this.object_data[i];
             }
         }
         return null; //not found
-    }
+    };
     ;
     /**
      * Get an <tt>gdobject</tt>'s ID (mapping in <tt>player</tt> gdobject) by its UUID.
@@ -136,18 +138,18 @@ class player {
      * @returns {number | null}
      * @throws "Trying to access object_data from a non-online player!"
      */
-    getObjectID(uuid) {
+    player.prototype.getObjectID = function (uuid) {
         if (!this.online) {
             throw "Trying to access object_data from a non-online player!";
         }
-        let i;
+        var i;
         for (i = 0; i < this.object_data.length; i += 1) {
             if (this.object_data[i].uuid === uuid) {
                 return i;
             }
         }
         return null; //not found
-    }
+    };
     ;
     /**
      * Add a gdobject to the Player.
@@ -157,7 +159,7 @@ class player {
      * @returns {boolean}
      * @throws "Trying to access object_data from a non-online player!"
      */
-    addObject(token, object) {
+    player.prototype.addObject = function (token, object) {
         if (!this.verifyToken(token)) {
             return false;
         }
@@ -166,7 +168,7 @@ class player {
         }
         this.object_data.push(object);
         return true;
-    }
+    };
     ;
     /**
      * Remove a gdobject from the Player.
@@ -176,7 +178,9 @@ class player {
      * @param {string | null} [uuid] - The name of the gdobject to remove.
      * @returns {boolean}
      */
-    removeObject(token, name = null, uuid = null) {
+    player.prototype.removeObject = function (token, name, uuid) {
+        if (name === void 0) { name = null; }
+        if (uuid === void 0) { uuid = null; }
         if (!this.verifyToken(token)) {
             return false;
         }
@@ -184,7 +188,7 @@ class player {
             throw "Trying to access object_data from a non-online player!";
         }
         if (!name === null) {
-            let id = this.getObjectID(this.getObjectByName(name).uuid);
+            var id = this.getObjectID(this.getObjectByName(name).uuid);
             if (id === null) {
                 return false;
             }
@@ -192,7 +196,7 @@ class player {
             return true;
         }
         if (!uuid === null) {
-            let id = this.getObjectID(uuid);
+            var id = this.getObjectID(uuid);
             if (id === null) {
                 return false;
             }
@@ -200,7 +204,7 @@ class player {
             return true;
         }
         return false;
-    }
+    };
     ;
     /**
      * Verify if a token comes from the player and is valid.
@@ -208,11 +212,11 @@ class player {
      * @param {string} [token] - The authorization/authentication token.
      * @returns {boolean}
      */
-    verifyToken(token) {
+    player.prototype.verifyToken = function (token) {
         try {
-            let exists = false;
-            let tuuid = "nope";
-            for (let t in this._token) {
+            var exists = false;
+            var tuuid = "nope";
+            for (var t in this._token) {
                 if (t[0] === token) {
                     exists = true;
                     tuuid = t[1];
@@ -221,13 +225,13 @@ class player {
             if (exists === false) {
                 return false;
             }
-            let data = jwt.verify(token, settings["SECRET"]);
+            var data = jwt.verify(token, settings["SECRET"]);
             return data["username"] === this.username && data["password"] === this._password && data["tokenUUID"] === tuuid;
         }
         catch (e) {
             return false;
         }
-    }
+    };
     ;
     /**
      * Invalidate a Token (Aka Logout).
@@ -235,9 +239,9 @@ class player {
      * @param {string} [token] - The authorization/authentication token.
      * @returns {boolean}
      */
-    removeToken(token) {
+    player.prototype.removeToken = function (token) {
         if (this.verifyToken(token)) {
-            let i;
+            var i = void 0;
             for (i = 0; i < this._token.length; i += 1) {
                 if (this._token[i][0] === token) {
                     this._token.splice(i, 0);
@@ -246,36 +250,36 @@ class player {
             }
             return false; //not found
         }
-    }
+    };
     /**
      * Verify if a token comes from the <tt>player</tt> and is valid.
      * @method
      * @param {string} [password] - The <tt>player</tt>'s Password
      * @returns {boolean | string}
      */
-    login(password) {
+    player.prototype.login = function (password) {
         password = cryptog.createHash('sha256').update(password).digest('hex');
         if (password === this._password) {
-            let tuuid = uuidv4();
-            let secret = settings["SECRET"];
-            let token = jwt.sign({ "username": this.username, "password": password, "tokenUUID": tuuid }, secret);
-            let tarray = Array(token, tuuid);
+            var tuuid = uuidv4();
+            var secret = settings["SECRET"];
+            var token = jwt.sign({ "username": this.username, "password": password, "tokenUUID": tuuid }, secret);
+            var tarray = Array(token, tuuid);
             // @ts-ignore
             this._token.push(tarray);
             this.online = true;
             return token;
         }
         return false;
-    }
+    };
     /**
      * Hashes the input and compare the hash with <tt>this._password</tt>.
      * @method
      * @param {string} [password] - The <tt>player</tt>'s password.
      * @returns {boolean}
      */
-    verifyPassword(password) {
+    player.prototype.verifyPassword = function (password) {
         return cryptog.createHash('sha256').update(password).digest('hex') === this._password;
-    }
+    };
     /**
      * Change The <tt>player</tt>'s password. Needs either a valid token or the current password.
      * @method
@@ -284,20 +288,22 @@ class player {
      * @param {string} [newPassword] - The new password.
      * @returns {boolean}
      */
-    modifyPassword(token = null, oldPassword = null, newPassword) {
+    player.prototype.modifyPassword = function (token, oldPassword, newPassword) {
+        if (token === void 0) { token = null; }
+        if (oldPassword === void 0) { oldPassword = null; }
         if (this.verifyToken(token) || this.verifyPassword(oldPassword)) {
             this._password = cryptog.createHash('sha256').update(newPassword).digest('hex');
             return true;
         }
         return false;
-    }
+    };
     /**
      * Deletes the current Token and set the player to offline.
      * @method
      * @param {string} [token] - The authorization/authentication token.
      * @returns {boolean}
      */
-    logout(token) {
+    player.prototype.logout = function (token) {
         if (this.verifyToken(token)) {
             this.removeToken(token);
             this.object_data = Array(); //Clear all object_data
@@ -305,30 +311,30 @@ class player {
             return true;
         }
         return false;
-    }
+    };
     /**
      * Forces the logout with or without token.
      * @returns {boolean}
      */
-    logout_force() {
+    player.prototype.logout_force = function () {
         this.object_data = Array(); //Clear all object_data
         this.online = false;
         return true;
-    }
+    };
     /**
      * Get an array with all the gdobjects.
      * @method
      * @returns {Array}
      */
-    getObjects() {
+    player.prototype.getObjects = function () {
         return this.object_data;
-    }
+    };
     /**
      * Update gdobjects
      * @param {string} [token] - The authorization/authentication token.
      * @param {Array<gdobject>} [objectArray] - An array with all the gdobjects.
      */
-    updateObjects(token, objectArray) {
+    player.prototype.updateObjects = function (token, objectArray) {
         // Auth
         if (!this.verifyToken(token)) {
             return false;
@@ -336,28 +342,28 @@ class player {
         // Object Update
         this.object_data = objectArray;
         return true;
-    }
+    };
     /**
      * Check if is a moderator.
      * @return {boolean}
      */
-    isMod() {
+    player.prototype.isMod = function () {
         return this.moderator;
-    }
+    };
     /**
      * Serialize and returns the player object_data.
      * @method
      * @param {player} [playerInstance] - The player instance where the object_data should be loaded from.
      * @returns {Array}
      */
-    static serialize(playerInstance) {
-        let data = {};
+    player.serialize = function (playerInstance) {
+        var data = {};
         data["username"] = playerInstance.username;
         data["uuid"] = playerInstance.uuid;
         data["password"] = playerInstance._password;
         data["moderator"] = playerInstance.moderator;
         return data;
-    }
+    };
     /**
      * Loads player object_data from an array.
      * @method
@@ -365,15 +371,15 @@ class player {
      * @param {Array} [data] - The serialized player object_data.
      * @returns {player}
      */
-    static loadData(playerInstance, data) {
+    player.loadData = function (playerInstance, data) {
         playerInstance.username = data["username"];
         playerInstance.uuid = data["uuid"];
         playerInstance._password = data["password"];
         playerInstance.moderator = data["moderator"];
         return true;
-    }
-}
+    };
+    return player;
+}());
 exports.player = player;
 exports.gdobject = gdobject;
 exports.player = player;
-//# sourceMappingURL=player.js.map
