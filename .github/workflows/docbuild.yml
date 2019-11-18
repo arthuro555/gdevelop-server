@@ -22,7 +22,7 @@ jobs:
         npm install yarn
         npm install -g jsdoc
         yarn install
-        jsdoc main.js player.js pmanager.js confighandler.js
+        jsdoc main.ts player.ts pmanager.ts confighandler.ts
         mv ./out doc
       env:
         CI: true
