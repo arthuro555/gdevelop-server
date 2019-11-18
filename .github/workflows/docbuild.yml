@@ -20,7 +20,7 @@ jobs:
     - name: install yarn and deps, then build jsdoc
       run: |
         npm install yarn
-        npm install --save-dev jsdoc
+        npm install -g jsdoc
         yarn install
         jsdoc main.js player.js pmanager.js confighandler.js
         mv ./out doc
