@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: player.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: player.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+// Requirements
+let cryptog = require('crypto');
+const uuidv1 = require('uuid/v1');
+const uuidv4 = require('uuid/v4');
+let jwt = require('jsonwebtoken');
+const settings = require("./confighandler.js").config;
+/**
+ * Represents an Object in a scene. Stores GDevelop objects object_data.
+ * @class
+ * @param {string} [name] - The Name of the object to know which one to spawn.
+ * @param {string} [uuid] - The GDevelop UUID to interact with an object in particular.
+ * @param {number} [x] - The x-coordinate position of an object.
+ * @param {number} [y] - The y-coordinate position of an object.
+ */
+class gdobject {
+    /** @constructor */
+    constructor(name, uuid, x, y) {
+        /** @type {string} */
+        this.name = name;
+        /** @type {string} */
+        this.uuid = uuid;
+        /** @type {number} */
+        this.x = x;
+        /** @type {number} */
+        this.y = y;
+    }
+    ;
+    update(name, uuid, x, y) {
+        /** @type {string} */
+        this.name = name;
+        /** @type {string} */
+        this.uuid = uuid;
+        /** @type {number} */
+        this.x = x;
+        /** @type {number} */
+        this.y = y;
+    }
+    ;
+    /**
+     * Returns all the gdobjects object_data in an Array
+     * @returns {Array}
+     */
+    get() {
+        return [this.name, this.uuid, this.x, this.y];
+    }
+}
+exports.gdobject = gdobject;
+/**
+ * Represents a Player. Authenticates players and store their login object_data and game object_data when online.
+ * @class
+ * @param {string} [username] - The username.
+ * @param {string} [password] - The password (will automatically be hashed).
+ * @param {boolean} [moderator] - Is the user an admin?
+ * @property {Array&lt;gdobject>} [object_data] - An &lt;tt>Array&lt;/tt> containing Objects and User object_data.
+ * @property {string} [_password] - The user password (Hashed).
+ * @property {Array&lt;string>} [_token] - An &lt;tt>Array&lt;/tt> containing the Authentication tokens.
+ * @property {string} [uuid] - The &lt;tt>player&lt;/tt> Unique ID to distinguish it from other instance.
+ * @property {string} [username] - The &lt;tt>player&lt;/tt> Username.
+ * @property {boolean} [online] - If the player is not online, this flag will prevent object_data to be modified.
+ * @property {boolean} [moderator] - Modify this to true to let this player access Admin features (server-side).
+ * @property {Array&lt;string>} [socket_id] - Permits to identify if a socket is the owner of an account.
+ */
+class player {
+    /** @constructor */
+    constructor(username, password, moderator = false) {
+        /** @type {Array&lt;gdobject>} */
+        this.object_data = [];
+        /**
+         * @type {string}
+         * @private
+         */
+        this._password = cryptog.createHash('sha256').update(password).digest('hex');
+        /**@type {string[]}*/
+        this.socket_id = [];
+        /**
+         * @type {Array&lt;string>}
+         * @private
+         */
+        this._token = [];
+        /** @type {string} */
+        this.uuid = uuidv1();
+        /** @type {string} */
+        this.username = username;
+        /** @type {boolean} */
+        this.online = false;
+        /** @type {boolean} */
+        this.moderator = moderator;
+    }
+    ;
+    /**
+     * Get an &lt;tt>gdobject&lt;/tt> by its name (Prefer getObjectByUUID())
+     * @method
+     * @param {string} [name] - The name variable of the gdobject
+     * @returns {gdobject | null}
+     * @throws "Trying to access object_data from a non-online player!"
+     */
+    getObjectByName(name) {
+        if (!this.online) {
+            throw "Trying to access object_data from a non-online player!";
+        }
+        let i;
+        for (i = 0; i &lt; this.object_data.length; i += 1) {
+            if (this.object_data[i].name === name) {
+                return this.object_data[i];
+            }
+        }
+        return null; //not found
+    }
+    ;
+    /**
+     * Get an &lt;tt>gdobject&lt;/tt> by its UUID
+     * @method
+     * @param {string} [uuid] - The uuid variable of the gdobject
+     * @returns {gdobject | null}
+     * @throws "Trying to access object_data from a non-online player!"
+     */
+    getObjectByUUID(uuid) {
+        if (!this.online) {
+            throw "Trying to access object_data from a non-online player!";
+        }
+        let i;
+        for (i = 0; i &lt; this.object_data.length; i += 1) {
+            if (this.object_data[i].uuid === uuid) {
+                return this.object_data[i];
+            }
+        }
+        return null; //not found
+    }
+    ;
+    /**
+     * Get an &lt;tt>gdobject&lt;/tt>'s ID (mapping in &lt;tt>player&lt;/tt> gdobject) by its UUID.
+     * @method
+     * @param {string} [uuid] - The uuid variable of the gdobject.
+     * @returns {number | null}
+     * @throws "Trying to access object_data from a non-online player!"
+     */
+    getObjectID(uuid) {
+        if (!this.online) {
+            throw "Trying to access object_data from a non-online player!";
+        }
+        let i;
+        for (i = 0; i &lt; this.object_data.length; i += 1) {
+            if (this.object_data[i].uuid === uuid) {
+                return i;
+            }
+        }
+        return null; //not found
+    }
+    ;
+    /**
+     * Add a gdobject to the Player.
+     * @method
+     * @param {string} [token] - The authorization/authentication token.
+     * @param {gdobject} [object] - The gdobject to add.
+     * @returns {boolean}
+     * @throws "Trying to access object_data from a non-online player!"
+     */
+    addObject(token, object) {
+        if (!this.verifyToken(token)) {
+            return false;
+        }
+        if (!this.online) {
+            throw "Trying to access object_data from a non-online player!";
+        }
+        this.object_data.push(object);
+        return true;
+    }
+    ;
+    /**
+     * Remove a gdobject from the Player.
+     * @method
+     * @param {string} token - The authorization/authentication token.
+     * @param {string | null} [name] - The UUID of the gdobject to remove.
+     * @param {string | null} [uuid] - The name of the gdobject to remove.
+     * @returns {boolean}
+     */
+    removeObject(token, name = null, uuid = null) {
+        if (!this.verifyToken(token)) {
+            return false;
+        }
+        if (!this.online) {
+            throw "Trying to access object_data from a non-online player!";
+        }
+        if (!name === null) {
+            let id = this.getObjectID(this.getObjectByName(name).uuid);
+            if (id === null) {
+                return false;
+            }
+            this.object_data.splice(id, 1);
+            return true;
+        }
+        if (!uuid === null) {
+            let id = this.getObjectID(uuid);
+            if (id === null) {
+                return false;
+            }
+            this.object_data.splice(id, 1);
+            return true;
+        }
+        return false;
+    }
+    ;
+    /**
+     * Verify if a token comes from the player and is valid.
+     * @method
+     * @param {string} [token] - The authorization/authentication token.
+     * @returns {boolean}
+     */
+    verifyToken(token) {
+        try {
+            let exists = false;
+            let tuuid = "nope";
+            for (let t in this._token) {
+                if (t[0] === token) {
+                    exists = true;
+                    tuuid = t[1];
+                }
+            }
+            if (exists === false) {
+                return false;
+            }
+            let data = jwt.verify(token, settings["SECRET"]);
+            return data["username"] === this.username &amp;&amp; data["password"] === this._password &amp;&amp; data["tokenUUID"] === tuuid;
+        }
+        catch (e) {
+            return false;
+        }
+    }
+    ;
+    /**
+     * Invalidate a Token (Aka Logout).
+     * @method
+     * @param {string} [token] - The authorization/authentication token.
+     * @returns {boolean}
+     */
+    removeToken(token) {
+        if (this.verifyToken(token)) {
+            let i;
+            for (i = 0; i &lt; this._token.length; i += 1) {
+                if (this._token[i][0] === token) {
+                    this._token.splice(i, 0);
+                    return true;
+                }
+            }
+            return false; //not found
+        }
+    }
+    /**
+     * Verify if a token comes from the &lt;tt>player&lt;/tt> and is valid.
+     * @method
+     * @param {string} [password] - The &lt;tt>player&lt;/tt>'s Password
+     * @returns {boolean | string}
+     */
+    login(password) {
+        password = cryptog.createHash('sha256').update(password).digest('hex');
+        if (password === this._password) {
+            let tuuid = uuidv4();
+            let secret = settings["SECRET"];
+            let token = jwt.sign({ "username": this.username, "password": password, "tokenUUID": tuuid }, secret);
+            let tarray = Array(token, tuuid);
+            // @ts-ignore
+            this._token.push(tarray);
+            this.online = true;
+            return token;
+        }
+        return false;
+    }
+    /**
+     * Hashes the input and compare the hash with &lt;tt>this._password&lt;/tt>.
+     * @method
+     * @param {string} [password] - The &lt;tt>player&lt;/tt>'s password.
+     * @returns {boolean}
+     */
+    verifyPassword(password) {
+        return cryptog.createHash('sha256').update(password).digest('hex') === this._password;
+    }
+    /**
+     * Change The &lt;tt>player&lt;/tt>'s password. Needs either a valid token or the current password.
+     * @method
+     * @param {string | null} [token] - The authorization/authentication token.
+     * @param {string | null} [oldPassword] - The current password.
+     * @param {string} [newPassword] - The new password.
+     * @returns {boolean}
+     */
+    modifyPassword(token = null, oldPassword = null, newPassword) {
+        if (this.verifyToken(token) || this.verifyPassword(oldPassword)) {
+            this._password = cryptog.createHash('sha256').update(newPassword).digest('hex');
+            return true;
+        }
+        return false;
+    }
+    /**
+     * Deletes the current Token and set the player to offline.
+     * @method
+     * @param {string} [token] - The authorization/authentication token.
+     * @returns {boolean}
+     */
+    logout(token) {
+        if (this.verifyToken(token)) {
+            this.removeToken(token);
+            this.object_data = Array(); //Clear all object_data
+            this.online = false;
+            return true;
+        }
+        return false;
+    }
+    /**
+     * Forces the logout with or without token.
+     * @returns {boolean}
+     */
+    logout_force() {
+        this.object_data = Array(); //Clear all object_data
+        this.online = false;
+        return true;
+    }
+    /**
+     * Get an array with all the gdobjects.
+     * @method
+     * @returns {Array}
+     */
+    getObjects() {
+        return this.object_data;
+    }
+    /**
+     * Update gdobjects
+     * @param {string} [token] - The authorization/authentication token.
+     * @param {Array&lt;gdobject>} [objectArray] - An array with all the gdobjects.
+     */
+    updateObjects(token, objectArray) {
+        // Auth
+        if (!this.verifyToken(token)) {
+            return false;
+        }
+        // Object Update
+        this.object_data = objectArray;
+        return true;
+    }
+    /**
+     * Check if is a moderator.
+     * @return {boolean}
+     */
+    isMod() {
+        return this.moderator;
+    }
+    /**
+     * Serialize and returns the player object_data.
+     * @method
+     * @param {player} [playerInstance] - The player instance where the object_data should be loaded from.
+     * @returns {Array}
+     */
+    static serialize(playerInstance) {
+        let data = {};
+        data["username"] = playerInstance.username;
+        data["uuid"] = playerInstance.uuid;
+        data["password"] = playerInstance._password;
+        data["moderator"] = playerInstance.moderator;
+        return data;
+    }
+    /**
+     * Loads player object_data from an array.
+     * @method
+     * @param {player} [playerInstance] - The player instance where the object_data should be loaded.
+     * @param {Array} [data] - The serialized player object_data.
+     * @returns {player}
+     */
+    static loadData(playerInstance, data) {
+        playerInstance.username = data["username"];
+        playerInstance.uuid = data["uuid"];
+        playerInstance._password = data["password"];
+        playerInstance.moderator = data["moderator"];
+        return true;
+    }
+}
+exports.player = player;
+exports.gdobject = gdobject;
+exports.player = player;
+//# sourceMappingURL=player.js.map</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="gdobject.html">gdobject</a></li><li><a href="player.html">player</a></li><li><a href="pmanager.html">pmanager</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Mon Nov 18 2019 21:04:56 GMT+0100 (Europe de l’Ouest)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
