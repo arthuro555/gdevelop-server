@@ -38,13 +38,9 @@ export class gdobject {
         this.y = y;
     };
     update(name, uuid, x, y){
-        /** @type {string} */
         this.name = name;
-        /** @type {string} */
         this.uuid = uuid;
-        /** @type {number} */
         this.x = x;
-        /** @type {number} */
         this.y = y;
     };
     /**

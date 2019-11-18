@@ -3,19 +3,19 @@
  * @author Arthur Pacaud (arthuro555)
  * @version 0.0.1-dev-in-progress
  */
-var express = require('express');
-var socketIO = require('socket.io');
-var wireUpServer = require('socket.io-fix-close');
-var settings = require("./confighandler.js").config;
-var PORT = process.env.PORT || 80;
-var pclass = require("./player");
-var pm = require("./pmanager.js");
+const express = require('express');
+const socketIO = require('socket.io');
+const wireUpServer = require('socket.io-fix-close');
+const settings = require("./confighandler.js").config;
+const PORT = process.env.PORT || 80;
+let pclass = require("./player");
+let pm = require("./pmanager.js");
 pm = new pm.pmanager();
 pm.loadData();
-var httpServer = express()
-    .use(function (req, res) { return res.sendFile("/index.html", { root: __dirname }); })
-    .listen(PORT, function () { return console.log("Listening on " + PORT); });
-var io = socketIO(httpServer);
+const httpServer = express()
+    .use((req, res) => res.sendFile("/index.html", { root: __dirname }))
+    .listen(PORT, () => console.log(`Listening on ${PORT}`));
+const io = socketIO(httpServer);
 wireUpServer(httpServer, io);
 io.on('connection', function (socket) {
     console.log("Player Connected");
@@ -23,10 +23,10 @@ io.on('connection', function (socket) {
         console.log("Non Logged-in player disconnected.");
     });
     socket.on('auth', function (data) {
-        var p = data["password"];
-        var u = data["username"];
+        let p = data["password"];
+        let u = data["username"];
         console.log(u + " is trying to log in...");
-        var token = pm.login(u, p);
+        let token = pm.login(u, p);
         if (token === false) {
             console.log("Auth. Failed for " + u + "!.");
             socket.emit("AuthFail", true);
@@ -51,16 +51,15 @@ io.on('connection', function (socket) {
                     io.close();
                     httpServer.close();
                     console.log("Server Closed");
-                    for (var _i = 0, _a = pm.getPlayers(); _i < _a.length; _i++) {
-                        var p_1 = _a[_i];
-                        p_1.logout_force();
+                    for (let p of pm.getPlayers()) {
+                        p.logout_force();
                     }
                     pm.serialize();
                     console.log("Goodbye!");
                 }
             });
             socket.on("updateState", function (data) {
-                var p = pm.getPlayer(data["username"]);
+                let p = pm.getPlayer(data["username"]);
                 p.updateObjects(data["token"], data["data"]);
             });
             socket.on("event", function (data) {
@@ -70,7 +69,7 @@ io.on('connection', function (socket) {
     });
 });
 if (process.platform === "win32") {
-    var rl = require("readline").createInterface({
+    let rl = require("readline").createInterface({
         input: process.stdin,
         output: process.stdout
     });
@@ -86,15 +85,15 @@ process.on('SIGINT', function () {
     io.close();
     httpServer.close();
     console.log("Server Closed");
-    for (var _i = 0, _a = pm.getPlayers(); _i < _a.length; _i++) {
-        var p = _a[_i];
+    for (let p of pm.getPlayers()) {
         p.logout_force();
     }
     pm.serialize();
     process.exit();
 });
-var updateGameState = function () {
+let updateGameState = function () {
     io.emit("tick", pm.getAllObjects());
     setTimeout(updateGameState, 200);
 };
 setTimeout(updateGameState, 200);
+//# sourceMappingURL=main.js.map

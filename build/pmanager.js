@@ -6,17 +6,17 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 // Requirements
-var fs = require("fs");
-var player_1 = require("./player");
-var config = require("./confighandler.js").config;
+const fs = require("fs");
+const player_1 = require("./player");
+const config = require("./confighandler.js").config;
 /**
 * The class for managing all the player instances.
 * @class pmanager
 * @property {Array<player>} players The array containing instances of <tt>player</tt>.
 */
-var pmanager = /** @class */ (function () {
+class pmanager {
     /** @constructor */
-    function pmanager() {
+    constructor() {
         /** @type {Array<player>} */
         this.players = Array();
     }
@@ -24,9 +24,9 @@ var pmanager = /** @class */ (function () {
      * Get the Array with all the player instances.
      * @returns {player[]}
      */
-    pmanager.prototype.getPlayers = function () {
+    getPlayers() {
         return this.players;
-    };
+    }
     /**
      * Get a <tt>player</tt> Instance from the username or the user UUID.
      * @method
@@ -34,12 +34,11 @@ var pmanager = /** @class */ (function () {
      * @param {string | null} [playerUUID] The player UUID
      * @returns {player | null}
      */
-    pmanager.prototype.getPlayer = function (playerName, playerUUID) {
+    getPlayer(playerName, playerUUID) {
         if (config["debug"]) {
             console.log(playerUUID, playerName, this.getPlayers());
         }
-        for (var _i = 0, _a = this.getPlayers(); _i < _a.length; _i++) {
-            var plyr = _a[_i];
+        for (const plyr of this.getPlayers()) {
             if (playerUUID !== undefined) {
                 if (plyr.uuid === playerUUID) {
                     return plyr;
@@ -52,17 +51,16 @@ var pmanager = /** @class */ (function () {
             }
         }
         return null; //not found
-    };
+    }
     /**
      * Add a <tt>player</tt> Instance to The manager.
      * @method
      * @param {player} [playerInstance] The <tt>player</tt> instance.
      * @returns {boolean}
      */
-    pmanager.prototype.addPlayer = function (playerInstance) {
-        var players = this.getPlayers();
-        for (var _i = 0, players_1 = players; _i < players_1.length; _i++) {
-            var p = players_1[_i];
+    addPlayer(playerInstance) {
+        let players = this.getPlayers();
+        for (let p of players) {
             if (p.uuid === playerInstance.uuid) {
                 console.error("Tried to add an already existing player to the player manager!");
                 return false;
@@ -76,7 +74,7 @@ var pmanager = /** @class */ (function () {
         }
         this.players[this.players.length] = playerInstance;
         return true;
-    };
+    }
     /**
      * Set a <tt>player</tt> Instance to Online.
      * @method
@@ -85,16 +83,14 @@ var pmanager = /** @class */ (function () {
      * @returns {boolean}
      * @deprecated Use this.login() instead.
      */
-    pmanager.prototype.setOnline = function (playerName, playerUUID) {
-        if (playerName === void 0) { playerName = null; }
-        if (playerUUID === void 0) { playerUUID = null; }
-        var p = this.getPlayer(playerName, playerUUID);
+    setOnline(playerName = null, playerUUID = null) {
+        let p = this.getPlayer(playerName, playerUUID);
         if (p === null) {
             return false;
         }
         p.online = true;
         return true;
-    };
+    }
     /**
      * Set a <tt>player</tt> Instance to Offline.
      * @method
@@ -103,27 +99,23 @@ var pmanager = /** @class */ (function () {
      * @returns {boolean}
      * @deprecated Use this.logout() instead.
      */
-    pmanager.prototype.setOffline = function (playerName, playerUUID) {
-        if (playerName === void 0) { playerName = null; }
-        if (playerUUID === void 0) { playerUUID = null; }
-        var p = this.getPlayer(playerName, playerUUID);
+    setOffline(playerName = null, playerUUID = null) {
+        let p = this.getPlayer(playerName, playerUUID);
         if (p === null) {
             return false;
         }
         p.logout_force();
         return true;
-    };
+    }
     /**
      * Get all <tt>objects</tt> of all <tt>players</tt>. Returns null if there are no <tt>objects</tt> on the Scene.
      * @method
      * @returns {Array | null}
      */
-    pmanager.prototype.getAllObjects = function () {
-        var ol = Array();
-        for (var _i = 0, _a = this.getPlayers(); _i < _a.length; _i++) {
-            var p = _a[_i];
-            for (var _b = 0, _c = p.object_data; _b < _c.length; _b++) {
-                var o = _c[_b];
+    getAllObjects() {
+        let ol = Array();
+        for (const p of this.getPlayers()) {
+            for (const o of p.object_data) {
                 ol.push(o);
             }
         }
@@ -133,7 +125,7 @@ var pmanager = /** @class */ (function () {
         else {
             return ol;
         }
-    };
+    }
     /**
      * Get all <tt>object</tt> of a specific <tt>player</tt> instance.
      * @method
@@ -141,17 +133,14 @@ var pmanager = /** @class */ (function () {
      * @param {string | null} [playerUUID] The <tt>player</tt>'s instance's UUID.
      * @returns {Array | null}
      */
-    pmanager.prototype.getObjectForPlayer = function (playerName, playerUUID) {
-        if (playerName === void 0) { playerName = null; }
-        if (playerUUID === void 0) { playerUUID = null; }
-        var pl = this.getPlayer(playerName, playerUUID);
-        var ol = Array();
-        for (var _i = 0, _a = this.getPlayers(); _i < _a.length; _i++) {
-            var p = _a[_i];
+    getObjectForPlayer(playerName = null, playerUUID = null) {
+        let pl = this.getPlayer(playerName, playerUUID);
+        let ol = Array();
+        for (let p of this.getPlayers()) {
             if (p === pl) {
                 continue;
             }
-            for (var o in p.getObjects()) {
+            for (let o in p.getObjects()) {
                 ol.push(o);
             }
         }
@@ -161,7 +150,7 @@ var pmanager = /** @class */ (function () {
         else {
             return ol;
         }
-    };
+    }
     /**
      * Set a <tt>player</tt> online and get a token if the authentication successes.
      * @method
@@ -169,41 +158,39 @@ var pmanager = /** @class */ (function () {
      * @param {string} [password] The <tt>player</tt>'s password.
      * @returns {string | boolean}
      */
-    pmanager.prototype.login = function (username, password) {
-        var p = this.getPlayer(username);
+    login(username, password) {
+        let p = this.getPlayer(username);
         if (p === null) {
-            var np = new player_1.player(username, password);
+            let np = new player_1.player(username, password);
             this.addPlayer(np);
             return np.login(password);
         }
         return p.login(password);
-    };
-    pmanager.prototype.logout = function (username, token) {
-        var p = this.getPlayer(username);
+    }
+    logout(username, token) {
+        let p = this.getPlayer(username);
         if (p === null) {
             return false;
         }
         return p.logout(token);
-    };
+    }
     /**
      * Serialize and save the player object_data in pmanager.
      * @method
      * @param {string} [file]
      * @returns {boolean}
      */
-    pmanager.prototype.serialize = function (file) {
-        if (file === void 0) { file = "userdata.json"; }
-        var i = 0;
-        var players = [];
-        for (var _i = 0, _a = this.players; _i < _a.length; _i++) {
-            var p = _a[_i];
+    serialize(file = "userdata.json") {
+        let i = 0;
+        let players = [];
+        for (let p of this.players) {
             players[i] = player_1.player.serialize(p);
             i++;
         }
         console.log(players);
         fs.writeFileSync("./" + file, JSON.stringify(players, null, 4));
         return true;
-    };
+    }
     /**
      * Deserialize and load the player object_data in pmanager.
      * @method
@@ -211,23 +198,20 @@ var pmanager = /** @class */ (function () {
      * @returns {boolean}
      * @throws "Invalid JSON. Verify for errors or delete userdata.json."
      */
-    pmanager.prototype.loadData = function (file) {
-        if (file === void 0) { file = "userdata.json"; }
+    loadData(file = "userdata.json") {
         if (fs.existsSync(file)) {
             try {
-                var i = 0;
+                let i = 0;
                 // @ts-ignore
-                var players = JSON.parse(fs.readFileSync("./" + file));
-                var pl = Array(players.length);
-                for (var _i = 0, players_2 = players; _i < players_2.length; _i++) {
-                    var p = players_2[_i];
+                let players = JSON.parse(fs.readFileSync("./" + file));
+                let pl = Array(players.length);
+                for (let p of players) {
                     pl[i] = new player_1.player("none", "");
                     player_1.player.loadData(pl[i], p);
                     i++;
                 }
                 // console.log(players);
-                for (var _a = 0, pl_1 = pl; _a < pl_1.length; _a++) {
-                    var p = pl_1[_a];
+                for (let p of pl) {
                     this.addPlayer(p);
                 }
                 return true;
@@ -245,8 +229,8 @@ var pmanager = /** @class */ (function () {
             console.log('No user data found: creating a clean new one.');
             return false;
         }
-    };
-    return pmanager;
-}());
+    }
+}
 exports.pmanager = pmanager;
 exports.pmanager = pmanager;
+//# sourceMappingURL=pmanager.js.map
