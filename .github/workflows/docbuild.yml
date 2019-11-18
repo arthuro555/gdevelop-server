@@ -19,7 +19,6 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - name: install yarn and deps, then build jsdoc
       run: |
-        npm ci
         npm install yarn
         npm install --save-dev jsdoc
         yarn install
