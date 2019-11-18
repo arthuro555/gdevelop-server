@@ -7,13 +7,11 @@ let pclass = require("./player");
 let pm = require("./pmanager.js");
 pm = new pm.pmanager();
 pm.loadData();
-const app = express()
+const httpServer = express()
     .use((req, res) => res.sendFile("/index.html", { root: __dirname }))
     .listen(PORT, () => console.log(`Listening on ${PORT}`));
-const httpServer = app.listen(80);
 const io = socketIO(httpServer);
 wireUpServer(httpServer, io);
-console.log("Listening...");
 io.on('connection', function (socket) {
     console.log("Player Connected");
     socket.on('disconnect', function () {
