@@ -1,1 +1,1 @@
-web: node main.js
+web: tsc -p . && node ./build/main.js
