@@ -1,0 +1,40 @@
+name: Build the Doc
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [8.x, 10.x, 12.x]
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - name: install yarn and deps, then build jsdoc
+      run: |
+        npm ci
+        npm install yarn
+        npm install --save-dev jsdoc
+        yarn install
+        jsdoc main.js player.js pmanager.js confighandler.js
+        mv ./out doc
+      env:
+        CI: true
+    - name: GitHub Pages
+      uses: crazy-max/ghaction-github-pages@v1.2.2
+      with:
+        # Build directory to deploy
+        build_dir: docs
+        # Commit author's name
+        committer_name: arthuro555
+        # Commit author's email
+        committer_email: arthur.pacaud@hotmail.fr
+        # Commit message
+        commit_message: Updated Documentation
