@@ -9,7 +9,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [8.x, 10.x, 12.x]
+        node-version: [8.x]
 
     steps:
     - uses: actions/checkout@v1
@@ -26,7 +26,8 @@ jobs:
         mv ./out doc
       env:
         CI: true
-    - name: GitHub Pages
+    - name: GitHub Pages deploy
+      if: success()
       uses: crazy-max/ghaction-github-pages@v1.2.2
       with:
         # Build directory to deploy
