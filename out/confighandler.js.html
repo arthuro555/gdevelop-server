@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: confighandler.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: confighandler.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>"use strict";
+/**
+ * @fileOverview A configuration parser.
+ * @author Arthur Pacaud (arthuro555)
+ * @version 0.0.1-dev-in-progress
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+const fs = require("fs");
+const uuidv4 = require("uuid/v4");
+/**
+ * A class to load/handle the config.json file.
+ * @class
+ * @protected {Array} [defaultConfig] - The default config.
+ * @public {Array} [config] - The actual config
+ */
+class config {
+    /** @constructor*/
+    constructor() {
+        this.requiredConfig = [
+            "SECRET",
+            "Verbose",
+            "debug",
+            "Security Rules"
+        ];
+        this.customConfigVerifier = {
+            "Security Rules": this.securityRulesVerifier,
+            "defaultUsers": this.defaultUsersVerifier
+        };
+        this.defaultConfig = {
+            "SECRET": uuidv4(),
+            "Verbose": false,
+            "defaultUsers": {
+                "admin": {
+                    "username": "admin",
+                    "password": "1234",
+                    "Admin?": true
+                },
+                "user": {
+                    "username": "user",
+                    "password": "no u",
+                    "Admin?": false
+                }
+            },
+            "Security Rules": {
+                "allowDuplicateUsername": true,
+                "allowDuplicateUUID": false,
+                "warnOnDuplicateUsername": true,
+                "warnOnDuplicateUUID": true
+            }
+        };
+        this.conf = this.defaultConfig;
+        if (fs.existsSync('config.json')) {
+            console.log('Loading Existing Config...');
+            try {
+                // noinspection JSCheckFunctionSignatures
+                this.conf = JSON.parse(fs.readFileSync("config.json"));
+            }
+            catch (e) {
+                if (e instanceof SyntaxError) {
+                    console.log("Invalid JSON. Re-Creating Default config.");
+                    this.conf = this.defaultConfig;
+                    fs.writeFileSync('config.json', JSON.stringify(this.conf, null, 4));
+                }
+                else {
+                    console.log("Unknown error while reading config.json: " + e);
+                }
+            }
+        }
+        else {
+            console.log('Creating New Default Config...');
+            this.conf = this.defaultConfig;
+            fs.writeFileSync('config.json', JSON.stringify(this.conf, null, 4));
+        }
+        this.defaultSettingVerifier("Verbose");
+        this.checkSettings(this.conf["Verbose"]);
+    }
+    defaultSettingVerifier(settingName, verbose = false) {
+        if (verbose) {
+            console.log("Checking config: " + settingName);
+        }
+        if (typeof this.conf[settingName] === "object") {
+            console.error("ERROR: 'Can't check an object: create your own check.' in '" + settingName + "'.");
+        }
+        if (this.conf[settingName] === undefined) {
+            console.warn("WARN: 'Invalid Config. Using default value.' in '" + settingName + "'.");
+            this.conf[settingName] = this.defaultConfig[settingName];
+        }
+    }
+    checkSettings(verbose = false) {
+        for (let s of this.requiredConfig) {
+            this.checkSetting(s, verbose);
+        }
+    }
+    checkSetting(setting, verbose = false) {
+        if (setting in this.customConfigVerifier) {
+            this.customConfigVerifier[setting].call(this, verbose);
+        }
+        else {
+            this.defaultSettingVerifier(setting, verbose);
+        }
+    }
+    securityRulesVerifier(verbose = false) {
+        if (this.conf["Security Rules"] === undefined) {
+            console.warn("WARN: 'Invalid Config. Using default value.' in 'Security Rules'.");
+            this.conf["Security Rules"] = this.defaultConfig["Security Rules"];
+            return;
+        }
+        if (this.conf["Security Rules"]["allowDuplicateUsername"] === undefined) {
+            console.warn("WARN: 'Invalid Config. Using default value.' in 'Security Rules/allowDuplicateUsername'.");
+            this.conf["Security Rules"]["allowDuplicateUsername"] = this.defaultConfig["allowDuplicateUsername"];
+        }
+        if (this.conf["Security Rules"]["allowDuplicateUUID"] === undefined) {
+            console.warn("WARN: 'Invalid Config. Using default value.' in 'Security Rules/allowDuplicateUUID'.");
+            this.conf["Security Rules"]["allowDuplicateUUID"] = this.defaultConfig["allowDuplicateUUID"];
+        }
+        if (this.conf["Security Rules"]["warnOnDuplicateUsername"] === undefined) {
+            console.warn("WARN: 'Invalid Config. Using default value.' in 'Security Rules/warnOnDuplicateUsername'.");
+            this.conf["Security Rules"]["warnOnDuplicateUsername"] = this.defaultConfig["warnOnDuplicateUsername"];
+        }
+        if (this.conf["Security Rules"]["warnOnDuplicateUUID"] === undefined) {
+            console.warn("WARN: 'Invalid Config. Using default value.' in 'Security Rules/warnOnDuplicateUUID'.");
+            this.conf["Security Rules"]["warnOnDuplicateUUID"] = this.defaultConfig["warnOnDuplicateUUID"];
+        }
+    }
+    defaultUsersVerifier(verbose = false) {
+        if (this.conf["defaultUsers"] === undefined) {
+            console.warn("WARN: 'Invalid Config. Using default value.' in 'Security Rules'.");
+            this.conf["defaultUsers"] = this.defaultConfig["defaultUsers"];
+            return;
+        }
+        for (let key in this.conf["defaultUsers"].keys()) {
+            if (this.conf["defaultUsers"][key]["username"] === undefined) {
+                console.warn("WARN: 'Invalid Config. Can't load one of the users in defaultUsers.");
+                delete conf["defaultUsers"][key];
+            }
+            if (this.conf["defaultUsers"][key]["password"] === undefined) {
+                console.warn("WARN: 'Invalid Config. Can't load one of the users in defaultUsers.");
+                delete conf["defaultUsers"][key];
+            }
+            if (this.conf["defaultUsers"][key]["Admin?"] === undefined) {
+                console.warn("WARN: 'Invalid Config. Can't load one of the users in defaultUsers.");
+                delete conf["defaultUsers"][key];
+            }
+        }
+    }
+}
+exports.config = config;
+let conf = new config();
+exports.configClass = config;
+exports.configInstance = conf;
+exports.config = conf.conf;
+//# sourceMappingURL=confighandler.js.map</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="config.html">config</a></li><li><a href="gdobject.html">gdobject</a></li><li><a href="player.html">player</a></li><li><a href="pmanager.html">pmanager</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Mon Nov 18 2019 23:55:02 GMT+0000 (UTC)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
