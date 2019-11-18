@@ -39,4 +39,4 @@ jobs:
         # Commit message
         commit_message: Updated Documentation
       env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_PAT: ${{ secrets.TokenRefreshGHPages }}
