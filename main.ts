@@ -3,13 +3,17 @@ const socketIO = require('socket.io');
 const wireUpServer = require('socket.io-fix-close');
 const settings = require("./confighandler.js").config;
 
+const PORT = process.env.PORT || 3000;
+
 
 let pclass = require("./player");
 let pm = require("./pmanager.js");
 pm = new pm.pmanager();
 pm.loadData();
 
-const app = express();
+const app = express()
+    .use((req, res) => res.sendFile("/index.html", { root: __dirname }))
+    .listen(PORT, () => console.log(`Listening on ${PORT}`));
 const httpServer = app.listen(80);
 const io = socketIO(httpServer);
 
