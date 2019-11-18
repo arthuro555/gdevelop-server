@@ -30,6 +30,7 @@ jobs:
       if: success()
       uses: crazy-max/ghaction-github-pages@v1.2.2
       with:
+        repo: arthuro555/gdevelop-server
         # Build directory to deploy
         build_dir: docs
         # Commit author's name
