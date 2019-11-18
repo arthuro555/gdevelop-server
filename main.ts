@@ -3,7 +3,7 @@ const socketIO = require('socket.io');
 const wireUpServer = require('socket.io-fix-close');
 const settings = require("./confighandler.js").config;
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 80;
 
 
 let pclass = require("./player");

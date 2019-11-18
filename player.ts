@@ -1,5 +1,5 @@
 /**
- * @fileOverview Definition of players and objects, that will contain the user data.
+ * @fileOverview Definition of players and objects, that will contain the user object_data.
  * @author Arthur Pacaud (arthuro555)
  * @version 0.0.1-dev-in-progress
  */
@@ -14,7 +14,7 @@ let jwt = require('jsonwebtoken');
 const settings = require("./confighandler.js").config;
 
 /**
- * Represents an Object in a scene. Stores GDevelop objects data.
+ * Represents an Object in a scene. Stores GDevelop objects object_data.
  * @class
  * @param {string} [name] - The Name of the object to know which one to spawn.
  * @param {string} [uuid] - The GDevelop UUID to interact with an object in particular.
@@ -48,7 +48,7 @@ export class gdobject {
         this.y = y;
     };
     /**
-     * Returns all the gdobjects data in an Array
+     * Returns all the gdobjects object_data in an Array
      * @returns {Array}
      */
     get(){
@@ -57,36 +57,40 @@ export class gdobject {
 }
 
 /**
- * Represents a Player. Authenticates players and store their login data and game data when online.
+ * Represents a Player. Authenticates players and store their login object_data and game object_data when online.
  * @class
  * @param {string} [username] - The username.
  * @param {string} [password] - The password (will automatically be hashed).
  * @param {boolean} [moderator] - Is the user an admin?
- * @property {Array<gdobject>} [data] - An <tt>Array</tt> containing Objects and User data.
+ * @property {Array<gdobject>} [object_data] - An <tt>Array</tt> containing Objects and User object_data.
  * @property {string} [_password] - The user password (Hashed).
  * @property {Array<string>} [_token] - An <tt>Array</tt> containing the Authentication tokens.
  * @property {string} [uuid] - The <tt>player</tt> Unique ID to distinguish it from other instance.
  * @property {string} [username] - The <tt>player</tt> Username.
- * @property {boolean} [online] - If the player is not online, this flag will prevent data to be modified.
+ * @property {boolean} [online] - If the player is not online, this flag will prevent object_data to be modified.
  * @property {boolean} [moderator] - Modify this to true to let this player access Admin features (server-side).
+ * @property {Array<string>} [socket_id] - Permits to identify if a socket is the owner of an account.
  */
 export class player {
     public online: boolean;
-    public data: gdobject[];
+    public object_data: gdobject[];
     private _password: string;
     private _token: string[];
     public uuid: any;
     public username: any;
     private moderator: boolean;
+    public socket_id: string[];
     /** @constructor */
     constructor(username, password, moderator=false){
         /** @type {Array<gdobject>} */
-        this.data = [];
+        this.object_data = [];
         /**
          * @type {string}
          * @private
          */
         this._password = cryptog.createHash('sha256').update(password).digest('hex');
+        /**@type {string[]}*/
+        this.socket_id = [];
         /**
          * @type {Array<string>}
          * @private
@@ -106,16 +110,16 @@ export class player {
      * @method
      * @param {string} [name] - The name variable of the gdobject
      * @returns {gdobject | null}
-     * @throws "Trying to access data from a non-online player!"
+     * @throws "Trying to access object_data from a non-online player!"
      */
     getObjectByName(name){
         if (!this.online){
-            throw "Trying to access data from a non-online player!";
+            throw "Trying to access object_data from a non-online player!";
         }
         let i;
-        for (i = 0; i < this.data.length; i += 1) {
-            if (this.data[i].name === name) {
-                return this.data[i];
+        for (i = 0; i < this.object_data.length; i += 1) {
+            if (this.object_data[i].name === name) {
+                return this.object_data[i];
             }
         }
         return null; //not found
@@ -125,16 +129,16 @@ export class player {
      * @method
      * @param {string} [uuid] - The uuid variable of the gdobject
      * @returns {gdobject | null}
-     * @throws "Trying to access data from a non-online player!"
+     * @throws "Trying to access object_data from a non-online player!"
      */
     getObjectByUUID(uuid){
         if (!this.online){
-            throw "Trying to access data from a non-online player!";
+            throw "Trying to access object_data from a non-online player!";
         }
         let i;
-        for (i = 0; i < this.data.length; i += 1) {
-            if (this.data[i].uuid === uuid) {
-                return this.data[i];
+        for (i = 0; i < this.object_data.length; i += 1) {
+            if (this.object_data[i].uuid === uuid) {
+                return this.object_data[i];
             }
         }
         return null; //not found
@@ -144,15 +148,15 @@ export class player {
      * @method
      * @param {string} [uuid] - The uuid variable of the gdobject.
      * @returns {number | null}
-     * @throws "Trying to access data from a non-online player!"
+     * @throws "Trying to access object_data from a non-online player!"
      */
     getObjectID(uuid){
         if (!this.online){
-            throw "Trying to access data from a non-online player!";
+            throw "Trying to access object_data from a non-online player!";
         }
         let i;
-        for (i = 0; i < this.data.length; i += 1) {
-            if (this.data[i].uuid === uuid) {
+        for (i = 0; i < this.object_data.length; i += 1) {
+            if (this.object_data[i].uuid === uuid) {
                 return i;
             }
         }
@@ -164,16 +168,16 @@ export class player {
      * @param {string} [token] - The authorization/authentication token.
      * @param {gdobject} [object] - The gdobject to add.
      * @returns {boolean}
-     * @throws "Trying to access data from a non-online player!"
+     * @throws "Trying to access object_data from a non-online player!"
      */
     addObject(token, object){
         if(!this.verifyToken(token)){
             return false;
         }
         if (!this.online){
-            throw "Trying to access data from a non-online player!";
+            throw "Trying to access object_data from a non-online player!";
         }
-        this.data.push(object);
+        this.object_data.push(object);
         return true
     };
     /**
@@ -189,14 +193,14 @@ export class player {
             return false;
         }
         if (!this.online){
-            throw "Trying to access data from a non-online player!";
+            throw "Trying to access object_data from a non-online player!";
         }
         if(!name === null){
             let id = this.getObjectID(this.getObjectByName(name).uuid);
             if(id === null){
                return false
             }
-            this.data.splice(id, 1);
+            this.object_data.splice(id, 1);
             return true;
         }
         if(!uuid === null){
@@ -204,7 +208,7 @@ export class player {
             if(id === null){
                 return false
             }
-            this.data.splice(id, 1);
+            this.object_data.splice(id, 1);
             return true;
         }
         return false;
@@ -303,7 +307,7 @@ export class player {
     logout(token:string){
         if(this.verifyToken(token)) {
             this.removeToken(token);
-            this.data = Array();  //Clear all data
+            this.object_data = Array();  //Clear all object_data
             this.online = false;
             return true;
         }
@@ -315,7 +319,7 @@ export class player {
      * @returns {boolean}
      */
     logout_force(){
-        this.data = Array();  //Clear all data
+        this.object_data = Array();  //Clear all object_data
         this.online = false;
         return true;
     }
@@ -325,7 +329,7 @@ export class player {
      * @returns {Array}
      */
     getObjects(){
-        return this.data;
+        return this.object_data;
     }
 
     /**
@@ -337,7 +341,7 @@ export class player {
         // Auth
         if(!this.verifyToken(token)){return false}
         // Object Update
-        this.data = objectArray;
+        this.object_data = objectArray;
         return true;
     }
 
@@ -349,9 +353,9 @@ export class player {
         return this.moderator;
     }
     /**
-     * Serialize and returns the player data.
+     * Serialize and returns the player object_data.
      * @method
-     * @param {player} [playerInstance] - The player instance where the data should be loaded from.
+     * @param {player} [playerInstance] - The player instance where the object_data should be loaded from.
      * @returns {Array}
      */
     static serialize(playerInstance:player){
@@ -363,10 +367,10 @@ export class player {
         return data;
     }
     /**
-     * Loads player data from an array.
+     * Loads player object_data from an array.
      * @method
-     * @param {player} [playerInstance] - The player instance where the data should be loaded.
-     * @param {Array} [data] - The serialized player data.
+     * @param {player} [playerInstance] - The player instance where the object_data should be loaded.
+     * @param {Array} [data] - The serialized player object_data.
      * @returns {player}
      */
     static loadData(playerInstance:player, data:[]){

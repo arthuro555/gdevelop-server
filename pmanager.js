@@ -115,7 +115,7 @@ class pmanager {
     getAllObjects() {
         let ol = Array();
         for (const p of this.getPlayers()) {
-            for (const o of p.data) {
+            for (const o of p.object_data) {
                 ol.push(o);
             }
         }
@@ -175,7 +175,7 @@ class pmanager {
         return p.logout(token);
     }
     /**
-     * Serialize and save the player data in pmanager.
+     * Serialize and save the player object_data in pmanager.
      * @method
      * @param {string} [file]
      * @returns {boolean}
@@ -192,7 +192,7 @@ class pmanager {
         return true;
     }
     /**
-     * Deserialize and load the player data in pmanager.
+     * Deserialize and load the player object_data in pmanager.
      * @method
      * @param {string} [file]
      * @returns {boolean}
