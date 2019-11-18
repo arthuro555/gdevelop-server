@@ -37,17 +37,17 @@ export class pmanager {
      * @param {string | null} [playerUUID] The player UUID
      * @returns {player | null}
      */
-    getPlayer(playerName:string = null, playerUUID:string = null) {
-        let i;
-        for (i = 0; i < this.players.length; i += 1) {
-            if (!playerUUID === null) {
-                if (this.players[i].uuid === playerUUID) {
-                    return this.players[i];
+    getPlayer(playerName?:string, playerUUID?:string) {
+        if (config["debug"]) {console.log(playerUUID, playerName, this.getPlayers());}
+        for (const plyr of this.getPlayers()) {
+            if (playerUUID !== undefined) {
+                if (plyr.uuid === playerUUID) {
+                    return plyr;
                 }
             }
-            if (!playerName === null) {
-                if (this.players[i].username === playerName) {
-                    return this.players[i];
+            if (playerName !== undefined) {
+                if (plyr.username === playerName) {
+                    return plyr;
                 }
             }
         }
@@ -115,10 +115,8 @@ export class pmanager {
      */
     getAllObjects() {
         let ol:gdobject[] = Array();
-        let p:player = undefined;
-        let o:gdobject = undefined;
-        for (let p of this.players) {
-            for (o of p.data) {
+        for (const p of this.getPlayers()) {
+            for (const o of p.data) {
                 ol.push(o)
             }
         }
@@ -138,7 +136,7 @@ export class pmanager {
     getObjectForPlayer(playerName = null, playerUUID = null) {
         let pl = this.getPlayer(playerName, playerUUID);
         let ol = Array();
-        for (let p of this.players) {
+        for (let p of this.getPlayers()) {
             if (p === pl) {
                 continue;
             }
@@ -153,7 +151,7 @@ export class pmanager {
         }
     }
     /**
-     * Set a player online and get a token if the authentication successes.
+     * Set a <tt>player</tt> online and get a token if the authentication successes.
      * @method
      * @param {string} [username] The <tt>player</tt>'s username.
      * @param {string} [password] The <tt>player</tt>'s password.

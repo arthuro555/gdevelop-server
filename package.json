@@ -11,6 +11,9 @@
   "main": "main.ts",
   "private": true,
   "dependencies": {
+    "@types/jsonwebtoken": "^8.3.5",
+    "@types/node": "^12.11.7",
+    "@types/socket.io": "^2.1.4",
     "express": "^4.17.1",
     "jsonwebtoken": "^8.5.1",
     "socket.io": "^2.3.0",

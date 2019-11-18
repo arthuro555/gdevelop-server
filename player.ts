@@ -3,6 +3,7 @@
  * @author Arthur Pacaud (arthuro555)
  * @version 0.0.1-dev-in-progress
  */
+import {strict} from "assert";
 
 
 // Requirements
@@ -259,7 +260,8 @@ export class player {
         password = cryptog.createHash('sha256').update(password).digest('hex');
         if(password === this._password){
             let tuuid:string = uuidv4();
-            let token:string = jwt.sign({"username": this.username, "password": password, "tokenUUID":tuuid}, settings["SECRET"]);
+            let secret:string = settings["SECRET"];
+            let token:string = jwt.sign({"username": this.username, "password": password, "tokenUUID":tuuid}, secret);
             let tarray:string[] = Array(token,tuuid);
             // @ts-ignore
             this._token.push(tarray);

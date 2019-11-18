@@ -1,9 +1,4 @@
 "use strict";
-/**
- * @fileOverview Definition of players and objects, that will contain the user data.
- * @author Arthur Pacaud (arthuro555)
- * @version 0.0.1-dev-in-progress
- */
 Object.defineProperty(exports, "__esModule", { value: true });
 // Requirements
 let cryptog = require('crypto');
@@ -259,7 +254,8 @@ class player {
         password = cryptog.createHash('sha256').update(password).digest('hex');
         if (password === this._password) {
             let tuuid = uuidv4();
-            let token = jwt.sign({ "username": this.username, "password": password, "tokenUUID": tuuid }, settings["SECRET"]);
+            let secret = settings["SECRET"];
+            let token = jwt.sign({ "username": this.username, "password": password, "tokenUUID": tuuid }, secret);
             let tarray = Array(token, tuuid);
             // @ts-ignore
             this._token.push(tarray);

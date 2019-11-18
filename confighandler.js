@@ -14,6 +14,7 @@ class config {
         this.requiredConfig = [
             "SECRET",
             "Verbose",
+            "debug",
             "Security Rules"
         ];
         this.customConfigVerifier = {
@@ -141,5 +142,6 @@ class config {
 exports.config = config;
 let conf = new config();
 exports.configClass = config;
-exports.config = conf;
+exports.configInstance = conf;
+exports.config = conf.conf;
 //# sourceMappingURL=confighandler.js.map

@@ -11,15 +11,6 @@ const httpServer = app.listen(80);
 const io = socketIO(httpServer);
 wireUpServer(httpServer, io);
 console.log("Listening...");
-if (!settings["defaultModerator"] === undefined) {
-    if (!settings["defaultModerator"]["username"] === undefined) {
-        if (!settings["defaultModerator"]["password"] === undefined) {
-            pm.addPlayer(new pclass.player(settings["defaultModerator"]["username"], settings["defaultModerator"]["password"], true));
-            console.log("added default player");
-        }
-    }
-}
-pm.addPlayer(new pclass.player("test", "oof"));
 io.on('connection', function (socket) {
     console.log("Player Connected");
     socket.on('disconnect', function () {
@@ -61,10 +52,12 @@ io.on('connection', function (socket) {
                     console.log("Goodbye!");
                 }
             });
-            socket.on("updateTick", function (data) {
+            socket.on("updateState", function (data) {
                 let p = pm.getPlayer(data["username"]);
                 p.updateObjects(data["token"], data["data"]);
-                socket.emit("tickUpdate", pm.getAllObjects());
+            });
+            socket.on("event", function (data) {
+                socket.broadcast.emit("event", data);
             });
         }
     });
@@ -92,4 +85,9 @@ process.on('SIGINT', function () {
     pm.serialize();
     process.exit();
 });
+let updateGameState = function () {
+    io.emit("tick", pm.getAllObjects());
+    setTimeout(updateGameState, 200);
+};
+setTimeout(updateGameState, 200);
 //# sourceMappingURL=main.js.map

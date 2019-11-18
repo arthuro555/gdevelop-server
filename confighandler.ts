@@ -12,6 +12,7 @@ export class config {
     protected requiredConfig:string[] = [
         "SECRET",
         "Verbose",
+        "debug",
         "Security Rules"
     ];
     protected customConfigVerifier = {
@@ -138,4 +139,5 @@ export class config {
 let conf = new config();
 
 exports.configClass = config;
-exports.config = conf;
+exports.configInstance = conf;
+exports.config = conf.conf;
