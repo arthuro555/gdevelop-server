@@ -345,7 +345,6 @@ export class player {
     /**
      * Check if is a moderator.
      * @method
-     * @property
      * @return {boolean}
      */
     isMod(){
