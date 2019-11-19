@@ -21,9 +21,11 @@ jobs:
       run: |
         npm install yarn
         npm install -g jsdoc
+        rm package-lock.json
         yarn install
-        jsdoc main.js player.js pmanager.js confighandler.js
-        mv ./out doc
+        npm run build
+        jsdoc ./build/main.js ./build/player.js ./build/pmanager.js ./build/confighandler.js
+        mv ./out docs
       env:
         CI: true
     - name: GitHub Pages deploy
