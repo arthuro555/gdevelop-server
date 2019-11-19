@@ -4,10 +4,12 @@
       <w>arthuro</w>
       <w>confighandler</w>
       <w>gdobject</w>
+      <w>gdobjects</w>
       <w>pacaud</w>
       <w>plyr</w>
       <w>pmanager</w>
       <w>pmserialize</w>
+      <w>userdata</w>
     </words>
   </dictionary>
 </component>

@@ -16,10 +16,10 @@ const settings = require("./confighandler.js").config;
 /**
  * Represents an Object in a scene. Stores GDevelop objects object_data.
  * @class
- * @param {string} [name] - The Name of the object to know which one to spawn.
- * @param {string} [uuid] - The GDevelop UUID to interact with an object in particular.
- * @param {number} [x] - The x-coordinate position of an object.
- * @param {number} [y] - The y-coordinate position of an object.
+ * @param {string} name - The Name of the object to know which one to spawn.
+ * @param {string} uuid - The GDevelop UUID to interact with an object in particular.
+ * @param {number} x - The x-coordinate position of an object.
+ * @param {number} y - The y-coordinate position of an object.
  */
 export class gdobject {
     public x: number;
@@ -55,17 +55,17 @@ export class gdobject {
 /**
  * Represents a Player. Authenticates players and store their login object_data and game object_data when online.
  * @class
- * @param {string} [username] - The username.
- * @param {string} [password] - The password (will automatically be hashed).
+ * @param {string} username - The username.
+ * @param {string} password - The password (will automatically be hashed).
  * @param {boolean} [moderator] - Is the user an admin?
- * @property {Array<gdobject>} [object_data] - An <tt>Array</tt> containing Objects and User object_data.
- * @property {string} [_password] - The user password (Hashed).
- * @property {Array<string>} [_token] - An <tt>Array</tt> containing the Authentication tokens.
- * @property {string} [uuid] - The <tt>player</tt> Unique ID to distinguish it from other instance.
- * @property {string} [username] - The <tt>player</tt> Username.
- * @property {boolean} [online] - If the player is not online, this flag will prevent object_data to be modified.
- * @property {boolean} [moderator] - Modify this to true to let this player access Admin features (server-side).
- * @property {Array<string>} [socket_id] - Permits to identify if a socket is the owner of an account.
+ * @property {Array<gdobject>} object_data - An <tt>Array</tt> containing Objects and User data.
+ * @property {string} _password - The user password (Hashed).
+ * @property {Array<string>} _token - An <tt>Array</tt> containing the Authentication tokens.
+ * @property {string} uuid - The <tt>player</tt> Unique ID to distinguish it from other instance.
+ * @property {string} username - The <tt>player</tt> Username.
+ * @property {boolean} online - If the player is not online, this flag will prevent object_data to be modified.
+ * @property {boolean} moderator - Modify this to true to let this player access Admin features (server-side).
+ * @property {Array<string>} socket_id - Permits to identify if a socket is the owner of an account.
  */
 export class player {
     public online: boolean;
@@ -104,13 +104,13 @@ export class player {
     /**
      * Get an <tt>gdobject</tt> by its name (Prefer getObjectByUUID())
      * @method
-     * @param {string} [name] - The name variable of the gdobject
+     * @param {string} name - The name variable of the gdobject
      * @returns {gdobject | null}
      * @throws "Trying to access object_data from a non-online player!"
      */
     getObjectByName(name){
         if (!this.online){
-            throw "Trying to access object_data from a non-online player!";
+            throw new Error("Trying to access object_data from a non-online player!")
         }
         let i;
         for (i = 0; i < this.object_data.length; i += 1) {
@@ -121,15 +121,15 @@ export class player {
         return null; //not found
     };
     /**
-     * Get an <tt>gdobject</tt> by its UUID
+     * Get a <tt>gdobject</tt> by its UUID
      * @method
-     * @param {string} [uuid] - The uuid variable of the gdobject
+     * @param {string} uuid - The uuid variable of the gdobject
      * @returns {gdobject | null}
      * @throws "Trying to access object_data from a non-online player!"
      */
     getObjectByUUID(uuid){
         if (!this.online){
-            throw "Trying to access object_data from a non-online player!";
+            throw new Error("Trying to access object_data from a non-online player!")
         }
         let i;
         for (i = 0; i < this.object_data.length; i += 1) {
@@ -140,15 +140,15 @@ export class player {
         return null; //not found
     };
     /**
-     * Get an <tt>gdobject</tt>'s ID (mapping in <tt>player</tt> gdobject) by its UUID.
+     * Get a <tt>gdobject</tt>'s ID (mapping in <tt>player</tt> gdobject) by its UUID.
      * @method
-     * @param {string} [uuid] - The uuid variable of the gdobject.
+     * @param {string} uuid - The uuid variable of the gdobject.
      * @returns {number | null}
      * @throws "Trying to access object_data from a non-online player!"
      */
     getObjectID(uuid){
         if (!this.online){
-            throw "Trying to access object_data from a non-online player!";
+            throw new Error("Trying to access object_data from a non-online player!")
         }
         let i;
         for (i = 0; i < this.object_data.length; i += 1) {
@@ -161,8 +161,8 @@ export class player {
     /**
      * Add a gdobject to the Player.
      * @method
-     * @param {string} [token] - The authorization/authentication token.
-     * @param {gdobject} [object] - The gdobject to add.
+     * @param {string} token - The authorization/authentication token.
+     * @param {gdobject} object - The gdobject to add.
      * @returns {boolean}
      * @throws "Trying to access object_data from a non-online player!"
      */
@@ -171,7 +171,7 @@ export class player {
             return false;
         }
         if (!this.online){
-            throw "Trying to access object_data from a non-online player!";
+            throw new Error("Trying to access object_data from a non-online player!")
         }
         this.object_data.push(object);
         return true
@@ -180,8 +180,8 @@ export class player {
      * Remove a gdobject from the Player.
      * @method
      * @param {string} token - The authorization/authentication token.
-     * @param {string | null} [name] - The UUID of the gdobject to remove.
-     * @param {string | null} [uuid] - The name of the gdobject to remove.
+     * @param {string | null} [name] - The name of the gdobject to remove.
+     * @param {string | null} [uuid] - The UUID of the gdobject to remove.
      * @returns {boolean}
      */
     removeObject(token:string, name:string = null, uuid:string = null){
@@ -189,7 +189,7 @@ export class player {
             return false;
         }
         if (!this.online){
-            throw "Trying to access object_data from a non-online player!";
+            throw new Error("Trying to access object_data from a non-online player!")
         }
         if(!name === null){
             let id = this.getObjectID(this.getObjectByName(name).uuid);
@@ -212,7 +212,7 @@ export class player {
     /**
      * Verify if a token comes from the player and is valid.
      * @method
-     * @param {string} [token] - The authorization/authentication token.
+     * @param {string} token - The authorization/authentication token.
      * @returns {boolean}
      */
     verifyToken(token:string){
@@ -235,7 +235,7 @@ export class player {
     /**
      * Invalidate a Token (Aka Logout).
      * @method
-     * @param {string} [token] - The authorization/authentication token.
+     * @param {string} token - The authorization/authentication token.
      * @returns {boolean}
      */
     removeToken(token:string){
@@ -251,9 +251,9 @@ export class player {
         }
     }
     /**
-     * Verify if a token comes from the <tt>player</tt> and is valid.
+     * Verify the password and returns a new token if it was correct, and false if it wasn't.
      * @method
-     * @param {string} [password] - The <tt>player</tt>'s Password
+     * @param {string} password - The <tt>player</tt>'s Password
      * @returns {boolean | string}
      */
     login(password:string){
@@ -273,7 +273,7 @@ export class player {
     /**
      * Hashes the input and compare the hash with <tt>this._password</tt>.
      * @method
-     * @param {string} [password] - The <tt>player</tt>'s password.
+     * @param {string} password - The <tt>player</tt>'s password.
      * @returns {boolean}
      */
     verifyPassword(password:string){
@@ -284,7 +284,7 @@ export class player {
      * @method
      * @param {string | null} [token] - The authorization/authentication token.
      * @param {string | null} [oldPassword] - The current password.
-     * @param {string} [newPassword] - The new password.
+     * @param {string} newPassword - The new password.
      * @returns {boolean}
      */
     modifyPassword(token:string=null, oldPassword:string=null, newPassword:string){
@@ -297,7 +297,7 @@ export class player {
     /**
      * Deletes the current Token and set the player to offline.
      * @method
-     * @param {string} [token] - The authorization/authentication token.
+     * @param {string} token - The authorization/authentication token.
      * @returns {boolean}
      */
     logout(token:string){
@@ -312,6 +312,7 @@ export class player {
 
     /**
      * Forces the logout with or without token.
+     * @method
      * @returns {boolean}
      */
     logout_force(){
@@ -330,8 +331,8 @@ export class player {
 
     /**
      * Update gdobjects
-     * @param {string} [token] - The authorization/authentication token.
-     * @param {Array<gdobject>} [objectArray] - An array with all the gdobjects.
+     * @param {string} token - The authorization/authentication token.
+     * @param {Array<gdobject>} objectArray - An array with all the gdobjects.
      */
     updateObjects(token:string, objectArray:gdobject[]){
         // Auth
@@ -343,6 +344,8 @@ export class player {
 
     /**
      * Check if is a moderator.
+     * @method
+     * @property
      * @return {boolean}
      */
     isMod(){
@@ -351,7 +354,8 @@ export class player {
     /**
      * Serialize and returns the player object_data.
      * @method
-     * @param {player} [playerInstance] - The player instance where the object_data should be loaded from.
+     * @static
+     * @param {player} playerInstance - The player instance where the object_data should be loaded from.
      * @returns {Array}
      */
     static serialize(playerInstance:player){
@@ -365,8 +369,9 @@ export class player {
     /**
      * Loads player object_data from an array.
      * @method
-     * @param {player} [playerInstance] - The player instance where the object_data should be loaded.
-     * @param {Array} [data] - The serialized player object_data.
+     * @static
+     * @param {player} playerInstance - The player instance where the object_data should be loaded.
+     * @param {Array} data - The serialized player object_data.
      * @returns {player}
      */
     static loadData(playerInstance:player, data:[]){

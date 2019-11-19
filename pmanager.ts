@@ -12,7 +12,7 @@ const config = require("./confighandler.js").config;
 /**
 * The class for managing all the player instances.
 * @class pmanager
-* @property {Array<player>} players The array containing instances of <tt>player</tt>.
+* @property {Array<player>} players - The array containing instances of <tt>player</tt>.
 */
 export class pmanager {
     private players: player[];
@@ -56,7 +56,7 @@ export class pmanager {
     /**
      * Add a <tt>player</tt> Instance to The manager.
      * @method
-     * @param {player} [playerInstance] The <tt>player</tt> instance.
+     * @param {player} playerInstance - The <tt>player</tt> instance.
      * @returns {boolean}
      */
     addPlayer(playerInstance:player) {
@@ -111,7 +111,7 @@ export class pmanager {
     /**
      * Get all <tt>objects</tt> of all <tt>players</tt>. Returns null if there are no <tt>objects</tt> on the Scene.
      * @method
-     * @returns {Array | null}
+     * @returns {Array<gdobject> | null}
      */
     getAllObjects() {
         let ol:gdobject[] = Array();
@@ -131,7 +131,7 @@ export class pmanager {
      * @method
      * @param {string | null} [playerName] The <tt>player</tt>'s instance's name.
      * @param {string | null} [playerUUID] The <tt>player</tt>'s instance's UUID.
-     * @returns {Array | null}
+     * @returns {Array<gdobject> | null}
      */
     getObjectForPlayer(playerName = null, playerUUID = null) {
         let pl = this.getPlayer(playerName, playerUUID);
@@ -153,8 +153,8 @@ export class pmanager {
     /**
      * Set a <tt>player</tt> online and get a token if the authentication successes.
      * @method
-     * @param {string} [username] The <tt>player</tt>'s username.
-     * @param {string} [password] The <tt>player</tt>'s password.
+     * @param {string} username The <tt>player</tt>'s username.
+     * @param {string} password The <tt>player</tt>'s password.
      * @returns {string | boolean}
      */
     login(username, password) {
@@ -166,6 +166,13 @@ export class pmanager {
         }
         return p.login(password);
     }
+    /**
+     * Set a <tt>player</tt> offline and clear his data.
+     * @method
+     * @param {string} username - The <tt>player</tt>'s username.
+     * @param {string} token - The <tt>player</tt>'s token.
+     * @returns {boolean}
+     */
     logout(username, token){
         let p = this.getPlayer(username);
         if (p === null) {
@@ -174,7 +181,7 @@ export class pmanager {
         return p.logout(token);
     }
     /**
-     * Serialize and save the player object_data in pmanager.
+     * Serialize and save the player data in pmanager to a local file.
      * @method
      * @param {string} [file]
      * @returns {boolean}
@@ -186,16 +193,16 @@ export class pmanager {
             players[i] = <string>player.serialize(p);
             i++;
         }
-        console.log(players);
+        if (config["debug"]){console.log(players);}
         fs.writeFileSync("./"+file, JSON.stringify(players, null, 4));
         return true;
     }
     /**
-     * Deserialize and load the player object_data in pmanager.
+     * Deserialize and load the player data into pmanager.
      * @method
      * @param {string} [file]
      * @returns {boolean}
-     * @throws "Invalid JSON. Verify for errors or delete userdata.json."
+     * @throws "Invalid JSON. Verify for errors or delete userdata.json/the file containing the user data.."
      */
     loadData(file = "userdata.json"){
         if (fs.existsSync(file)) {
@@ -216,7 +223,7 @@ export class pmanager {
                 return true;
             } catch (e) {
                 if(e instanceof SyntaxError){
-                    throw "Invalid JSON. Verify for errors or delete "+file+"."
+                    throw new Error("Invalid JSON. Verify for errors or delete "+file+".")
                 } else {
                     console.log("Unknown error while reading "+file+": " + e);
                 }
