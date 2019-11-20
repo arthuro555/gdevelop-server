@@ -190,7 +190,7 @@ export class pmanager {
         let i:number = 0;
         let players:string[] = [];
         for(let p of this.players){
-            players[i] = <string>player.serialize(p);
+            players[i] = <string><unknown>player.serialize(p);
             i++;
         }
         if (config["debug"]){console.log(players);}
