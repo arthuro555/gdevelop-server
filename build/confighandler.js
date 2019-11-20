@@ -49,17 +49,17 @@ class config {
             }
         };
         this.conf = this.defaultConfig;
-        if (fs.existsSync('config.json')) {
+        if (fs.existsSync('./serverData/config.json')) {
             console.log('Loading Existing Config...');
             try {
                 // noinspection JSCheckFunctionSignatures
-                this.conf = JSON.parse(fs.readFileSync("config.json"));
+                this.conf = JSON.parse(fs.readFileSync("./serverData/config.json"));
             }
             catch (e) {
                 if (e instanceof SyntaxError) {
                     console.log("Invalid JSON. Re-Creating Default config.");
                     this.conf = this.defaultConfig;
-                    fs.writeFileSync('config.json', JSON.stringify(this.conf, null, 4));
+                    fs.writeFileSync('./serverData/config.json', JSON.stringify(this.conf, null, 4));
                 }
                 else {
                     console.log("Unknown error while reading config.json: " + e);
@@ -69,7 +69,7 @@ class config {
         else {
             console.log('Creating New Default Config...');
             this.conf = this.defaultConfig;
-            fs.writeFileSync('config.json', JSON.stringify(this.conf, null, 4));
+            fs.writeFileSync('./serverData/config.json', JSON.stringify(this.conf, null, 4));
         }
         this.defaultSettingVerifier("Verbose");
         this.checkSettings(this.conf["Verbose"]);
@@ -145,6 +145,9 @@ class config {
     }
 }
 exports.config = config;
+if (!fs.existsSync("./serverData")) {
+    fs.mkdirSync("./serverData");
+}
 let conf = new config();
 exports.configClass = config;
 exports.configInstance = conf;

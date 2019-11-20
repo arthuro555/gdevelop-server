@@ -197,7 +197,7 @@ class pmanager {
         if (config["debug"]) {
             console.log(players);
         }
-        fs.writeFileSync("./" + file, JSON.stringify(players, null, 4));
+        fs.writeFileSync("./serverData/" + file, JSON.stringify(players, null, 4));
         return true;
     }
     /**
@@ -208,11 +208,11 @@ class pmanager {
      * @throws "Invalid JSON. Verify for errors or delete userdata.json/the file containing the user data.."
      */
     loadData(file = "userdata.json") {
-        if (fs.existsSync(file)) {
+        if (fs.existsSync("./serverData/" + file)) {
             try {
                 let i = 0;
                 // @ts-ignore
-                let players = JSON.parse(fs.readFileSync("./" + file));
+                let players = JSON.parse(fs.readFileSync("./serverData/" + file));
                 let pl = Array(players.length);
                 for (let p of players) {
                     pl[i] = new player_1.player("none", "");

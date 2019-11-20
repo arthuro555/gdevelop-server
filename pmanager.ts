@@ -186,7 +186,7 @@ export class pmanager {
      * @param {string} [file]
      * @returns {boolean}
      */
-    serialize(file = "userdata.json"){
+    serialize(file:string = "userdata.json"){
         let i:number = 0;
         let players:string[] = [];
         for(let p of this.players){
@@ -194,7 +194,7 @@ export class pmanager {
             i++;
         }
         if (config["debug"]){console.log(players);}
-        fs.writeFileSync("./"+file, JSON.stringify(players, null, 4));
+        fs.writeFileSync("./serverData/"+file, JSON.stringify(players, null, 4));
         return true;
     }
     /**
@@ -204,12 +204,12 @@ export class pmanager {
      * @returns {boolean}
      * @throws "Invalid JSON. Verify for errors or delete userdata.json/the file containing the user data.."
      */
-    loadData(file = "userdata.json"){
-        if (fs.existsSync(file)) {
+    loadData(file:string = "userdata.json"){
+        if (fs.existsSync("./serverData/"+file)) {
             try {
                 let i = 0;
                 // @ts-ignore
-                let players = JSON.parse(fs.readFileSync("./"+file));
+                let players = JSON.parse(fs.readFileSync("./serverData/"+file));
                 let pl:player[] = Array(players.length);
                 for(let p of players){
                     pl[i] = new player("none", "");
