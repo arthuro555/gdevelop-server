@@ -45,10 +45,10 @@ export class gdobject {
     /**
      * Updates the values of the object
      * @method
-     * @param {string} [name]
-     * @param {string} [uuid]
-     * @param {number} [x]
-     * @param {number} [y]
+     * @param {string | null} [name] - The Name of the object to know which one to spawn.
+     * @param {string | null} [uuid] - The GDevelop UUID to interact with an object in particular.
+     * @param {number | null} [x] - The x-coordinate position of an object.
+     * @param {number | null} [y] - The y-coordinate position of an object.
      */
     update(name:string = null, uuid:string = null, x:number = null, y:number = null){
         this.name = name;
