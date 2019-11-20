@@ -3,6 +3,7 @@
  * @author Arthur Pacaud (arthuro555)
  * @version 0.0.1-dev-in-progress
  */
+import {config} from "./confighandler";
 
 const express = require('express');
 const socketIO = require('socket.io');
@@ -12,9 +13,9 @@ const settings = require("./confighandler.js").config;
 const PORT = process.env.PORT || 80;
 
 
-let pclass = require("./player");
-let pm = require("./pmanager.js");
-pm = new pm.pmanager();
+import {player} from "./player"
+import {pmanager} from "./pmanager"
+let pm = new pmanager();
 pm.loadData();
 
 const httpServer = express()
@@ -54,7 +55,7 @@ io.on('connection', function (socket) {
             });
 
             socket.on("off", function (data) {
-                if (pm.getPlayer(data["username"]).moderator) {
+                if (pm.getPlayer(data["username"]).isMod()) {
                     // Try to close the server a clean way
                     io.emit("Closing", true);
                     io.engine.close();
@@ -75,6 +76,7 @@ io.on('connection', function (socket) {
             });
 
             socket.on("event", function (data) {
+                if(config["verbose"]){console.log("Event received: "+ JSON.stringify(data))}
                 socket.broadcast.emit("event", data);
             })
         }

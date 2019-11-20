@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="RunServer" type="NodeJSConfigurationType" node-parameters="--inspect=5858" path-to-js-file="main.js" working-dir="$PROJECT_DIR$">
+  <configuration default="false" name="RunServer" type="NodeJSConfigurationType" node-parameters="--inspect=5858" path-to-js-file="main.js" working-dir="$PROJECT_DIR$/build">
     <method v="2">
       <option name="TypeScript.Before.Run" enabled="true" FAIL_ON_ERROR="true" CONFIG_PATH="$PROJECT_DIR$/tsconfig.json" />
     </method>

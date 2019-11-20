@@ -11,8 +11,8 @@ let cryptog = require('crypto');
 const uuidv1 = require('uuid/v1');
 const uuidv4 = require('uuid/v4');
 let jwt = require('jsonwebtoken');
-const settings = require("./confighandler.js").config;
-
+import {config} from "./confighandler"
+const settings = config;
 /**
  * Represents an Object in a scene. Stores GDevelop objects object_data.
  * @class
@@ -20,6 +20,10 @@ const settings = require("./confighandler.js").config;
  * @param {string} uuid - The GDevelop UUID to interact with an object in particular.
  * @param {number} x - The x-coordinate position of an object.
  * @param {number} y - The y-coordinate position of an object.
+ * @property {string} name - The Name of the object to know which one to spawn.
+ * @property {string} uuid - The GDevelop UUID to interact with an object in particular.
+ * @property {number} x - The x-coordinate position of an object.
+ * @property {number} y - The y-coordinate position of an object.
  */
 export class gdobject {
     public x: number;
@@ -27,7 +31,7 @@ export class gdobject {
     public uuid: string;
     public name: string;
     /** @constructor */
-    constructor(name, uuid, x, y){
+    constructor(name:string, uuid:string, x:number, y:number){
         /** @type {string} */
         this.name = name;
         /** @type {string} */
@@ -37,7 +41,16 @@ export class gdobject {
         /** @type {number} */
         this.y = y;
     };
-    update(name, uuid, x, y){
+
+    /**
+     * Updates the values of the object
+     * @method
+     * @param {string} [name]
+     * @param {string} [uuid]
+     * @param {number} [x]
+     * @param {number} [y]
+     */
+    update(name:string = null, uuid:string = null, x:number = null, y:number = null){
         this.name = name;
         this.uuid = uuid;
         this.x = x;
@@ -45,6 +58,7 @@ export class gdobject {
     };
     /**
      * Returns all the gdobjects object_data in an Array
+     * @method
      * @returns {Array}
      */
     get(){

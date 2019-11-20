@@ -1,16 +1,18 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * @fileOverview The server part of the project.
  * @author Arthur Pacaud (arthuro555)
  * @version 0.0.1-dev-in-progress
  */
+const confighandler_1 = require("./confighandler");
 const express = require('express');
 const socketIO = require('socket.io');
 const wireUpServer = require('socket.io-fix-close');
 const settings = require("./confighandler.js").config;
 const PORT = process.env.PORT || 80;
-let pclass = require("./player");
-let pm = require("./pmanager.js");
-pm = new pm.pmanager();
+const pmanager_1 = require("./pmanager");
+let pm = new pmanager_1.pmanager();
 pm.loadData();
 const httpServer = express()
     .use((req, res) => res.sendFile("/index.html", { root: __dirname }))
@@ -44,7 +46,7 @@ io.on('connection', function (socket) {
                 }
             });
             socket.on("off", function (data) {
-                if (pm.getPlayer(data["username"]).moderator) {
+                if (pm.getPlayer(data["username"]).isMod()) {
                     // Try to close the server a clean way
                     io.emit("Closing", true);
                     io.engine.close();
@@ -63,6 +65,9 @@ io.on('connection', function (socket) {
                 p.updateObjects(data["token"], data["data"]);
             });
             socket.on("event", function (data) {
+                if (confighandler_1.config["verbose"]) {
+                    console.log("Event received: " + JSON.stringify(data));
+                }
                 socket.broadcast.emit("event", data);
             });
         }

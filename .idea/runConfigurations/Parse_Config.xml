@@ -1,10 +1,10 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Parse Config" type="NodeJSConfigurationType" node-parameters="--inspect" path-to-js-file="confighandler.js" working-dir="$PROJECT_DIR$">
+  <configuration default="false" name="Parse Config" type="NodeJSConfigurationType" node-parameters="--inspect" path-to-js-file="confighandler.js" working-dir="$PROJECT_DIR$/build">
     <EXTENSION ID="com.jetbrains.nodejs.run.NodeJSProfilingRunConfigurationExtension">
       <profiling allow-runtime-heap-snapshot="true" />
     </EXTENSION>
     <method v="2">
-      <option name="TypeScript.Before.Run" enabled="true" FAIL_ON_ERROR="true" CONFIG_PATH="" />
+      <option name="TypeScript.Before.Run" enabled="true" FAIL_ON_ERROR="true" />
     </method>
   </configuration>
 </component>
