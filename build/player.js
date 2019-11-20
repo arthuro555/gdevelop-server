@@ -1,4 +1,9 @@
 "use strict";
+/**
+ * @fileOverview Definition of players and objects, that will contain the user object_data.
+ * @author Arthur Pacaud (arthuro555)
+ * @version 0.0.1-dev-in-progress
+ */
 Object.defineProperty(exports, "__esModule", { value: true });
 // Requirements
 let cryptog = require('crypto');
@@ -110,10 +115,9 @@ class player {
         if (!this.online) {
             throw new Error("Trying to access object_data from a non-online player!");
         }
-        let i;
-        for (i = 0; i < this.object_data.length; i += 1) {
-            if (this.object_data[i].name === name) {
-                return this.object_data[i];
+        for (const object of this.object_data) {
+            if (object.name === name) {
+                return object;
             }
         }
         return null; //not found
@@ -130,10 +134,9 @@ class player {
         if (!this.online) {
             throw new Error("Trying to access object_data from a non-online player!");
         }
-        let i;
-        for (i = 0; i < this.object_data.length; i += 1) {
-            if (this.object_data[i].uuid === uuid) {
-                return this.object_data[i];
+        for (let object of this.object_data) {
+            if (object.uuid === uuid) {
+                return object;
             }
         }
         return null; //not found
@@ -193,7 +196,7 @@ class player {
         if (!this.online) {
             throw new Error("Trying to access object_data from a non-online player!");
         }
-        if (!name === null) {
+        if (name !== null) {
             let id = this.getObjectID(this.getObjectByName(name).uuid);
             if (id === null) {
                 return false;
@@ -201,7 +204,7 @@ class player {
             this.object_data.splice(id, 1);
             return true;
         }
-        if (!uuid === null) {
+        if (uuid !== null) {
             let id = this.getObjectID(uuid);
             if (id === null) {
                 return false;

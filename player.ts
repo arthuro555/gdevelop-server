@@ -3,7 +3,6 @@
  * @author Arthur Pacaud (arthuro555)
  * @version 0.0.1-dev-in-progress
  */
-import {strict} from "assert";
 
 
 // Requirements
@@ -126,10 +125,9 @@ export class player {
         if (!this.online){
             throw new Error("Trying to access object_data from a non-online player!")
         }
-        let i;
-        for (i = 0; i < this.object_data.length; i += 1) {
-            if (this.object_data[i].name === name) {
-                return this.object_data[i];
+        for (const object of this.object_data) {
+            if (object.name === name) {
+                return object;
             }
         }
         return null; //not found
@@ -145,10 +143,9 @@ export class player {
         if (!this.online){
             throw new Error("Trying to access object_data from a non-online player!")
         }
-        let i;
-        for (i = 0; i < this.object_data.length; i += 1) {
-            if (this.object_data[i].uuid === uuid) {
-                return this.object_data[i];
+        for (let object of this.object_data) {
+            if (object.uuid === uuid) {
+                return object;
             }
         }
         return null; //not found
@@ -164,7 +161,7 @@ export class player {
         if (!this.online){
             throw new Error("Trying to access object_data from a non-online player!")
         }
-        let i;
+        let i:number;
         for (i = 0; i < this.object_data.length; i += 1) {
             if (this.object_data[i].uuid === uuid) {
                 return i;
@@ -205,16 +202,16 @@ export class player {
         if (!this.online){
             throw new Error("Trying to access object_data from a non-online player!")
         }
-        if(!name === null){
-            let id = this.getObjectID(this.getObjectByName(name).uuid);
+        if(name !== null){
+            let id:number = this.getObjectID(this.getObjectByName(name).uuid);
             if(id === null){
                return false
             }
             this.object_data.splice(id, 1);
             return true;
         }
-        if(!uuid === null){
-            let id = this.getObjectID(uuid);
+        if(uuid !== null){
+            let id:number = this.getObjectID(uuid);
             if(id === null){
                 return false
             }
@@ -231,8 +228,8 @@ export class player {
      */
     verifyToken(token:string){
         try {
-            let exists = false;
-            let tuuid = "nope";
+            let exists:boolean = false;
+            let tuuid:string = "nope";
             for(let t in this._token){
                 if(t[0] === token){
                     exists = true;
@@ -240,7 +237,7 @@ export class player {
                 }
             }
             if(exists === false){return false}
-            let data = jwt.verify(token, settings["SECRET"]);
+            let data:object = jwt.verify(token, settings["SECRET"]);
             return data["username"] === this.username && data["password"] === this._password && data["tokenUUID"] === tuuid;
         } catch (e){
             return false;
@@ -254,7 +251,7 @@ export class player {
      */
     removeToken(token:string){
         if(this.verifyToken(token)){
-            let i;
+            let i:number;
             for (i = 0; i < this._token.length; i += 1) {
                 if (this._token[i][0] === token) {
                     this._token.splice(i, 0);
@@ -372,7 +369,7 @@ export class player {
      * @returns {Array}
      */
     static serialize(playerInstance:player){
-        let data = {};
+        let data:object = {};
         data["username"] = playerInstance.username;
         data["uuid"] = playerInstance.uuid;
         data["password"] = playerInstance._password;

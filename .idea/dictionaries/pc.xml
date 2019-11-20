@@ -3,6 +3,7 @@
     <words>
       <w>arthuro</w>
       <w>confighandler</w>
+      <w>cryptog</w>
       <w>gdobject</w>
       <w>gdobjects</w>
       <w>pacaud</w>
@@ -10,6 +11,7 @@
       <w>pmanager</w>
       <w>pmserialize</w>
       <w>userdata</w>
+      <w>uuidv</w>
     </words>
   </dictionary>
 </component>
