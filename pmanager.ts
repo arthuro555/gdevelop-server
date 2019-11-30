@@ -16,6 +16,7 @@ const config = require("./confighandler.js").config;
 */
 export class pmanager {
     private players: player[];
+
     /** @constructor */
     constructor() {
         /** @type {Array<player>} */
@@ -179,6 +180,22 @@ export class pmanager {
             return false;
         }
         return p.logout(token);
+    }
+
+    /**
+     * Finds an use with it's socket ID.
+     * @method
+     * @param {string} socketID - The Socket ID
+     * @return {player | boolean}
+     */
+    getBySocketID(socketID:string) {
+        /** @type {player} p */
+        for (let plyr of this.players) {
+            if (plyr.verifySocketID(socketID)){
+                return plyr
+            }
+        }
+        return false
     }
     /**
      * Serialize and save the player data in pmanager to a local file.

@@ -182,6 +182,21 @@ class pmanager {
         return p.logout(token);
     }
     /**
+     * Finds an use with it's socket ID.
+     * @method
+     * @param {string} socketID - The Socket ID
+     * @return {player | boolean}
+     */
+    getBySocketID(socketID) {
+        /** @type {player} p */
+        for (let plyr of this.players) {
+            if (plyr.verifySocketID(socketID)) {
+                return plyr;
+            }
+        }
+        return false;
+    }
+    /**
      * Serialize and save the player data in pmanager to a local file.
      * @method
      * @param {string} [file]

@@ -88,7 +88,7 @@ class player {
          */
         this._password = cryptog.createHash('sha256').update(password).digest('hex');
         /**@type {string[]}*/
-        this.socket_id = [];
+        this.socket_ids = [];
         /**
          * @type {Array<string>}
          * @private
@@ -358,6 +358,20 @@ class player {
      */
     isMod() {
         return this.moderator;
+    }
+    /**
+     * Check if a socket ID is associated with the current user.
+     * @method
+     * @param {string} socketID - The socket ID to check
+     * @return {boolean}
+     */
+    verifySocketID(socketID) {
+        for (let socket_id in this.socket_ids) {
+            if (socketID === socket_id) {
+                return true;
+            }
+        }
+        return false;
     }
     /**
      * Serialize and returns the player object_data.
