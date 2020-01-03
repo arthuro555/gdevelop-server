@@ -11,23 +11,27 @@ const uuidv4 = require("uuid/v4");
 /**
  * A class to load/handle the config.json file.
  * @class
- * @protected {Array} [defaultConfig] - The default config.
- * @public {Array} [config] - The actual config
+ * @property {Array} [defaultConfig] - The default config.
+ * @property {Array} [config] - The actual config
  */
 export class config {
+    /** @protected */
     protected requiredConfig:string[] = [
         "SECRET",
         "Verbose",
         "debug",
         "Security Rules"
     ];
+    /** @protected */
     protected customConfigVerifier = {
         "Security Rules": this.securityRulesVerifier,
         "defaultUsers": this.defaultUsersVerifier
     };
+    /** @protected */
     protected defaultConfig: object = {
         "SECRET": uuidv4(),
         "Verbose": false,
+        "port": 80,
         "defaultUsers": {
             "admin": {
                 "username": "admin",
@@ -47,6 +51,7 @@ export class config {
             "warnOnDuplicateUUID" : true
         }
     };
+    /** @public */
     public conf:object = this.defaultConfig;
 
     /** @constructor*/

@@ -10,25 +10,29 @@ const uuidv4 = require("uuid/v4");
 /**
  * A class to load/handle the config.json file.
  * @class
- * @protected {Array} [defaultConfig] - The default config.
- * @public {Array} [config] - The actual config
+ * @property {Array} [defaultConfig] - The default config.
+ * @property {Array} [config] - The actual config
  */
 class config {
     /** @constructor*/
     constructor() {
+        /** @protected */
         this.requiredConfig = [
             "SECRET",
             "Verbose",
             "debug",
             "Security Rules"
         ];
+        /** @protected */
         this.customConfigVerifier = {
             "Security Rules": this.securityRulesVerifier,
             "defaultUsers": this.defaultUsersVerifier
         };
+        /** @protected */
         this.defaultConfig = {
             "SECRET": uuidv4(),
             "Verbose": false,
+            "port": 80,
             "defaultUsers": {
                 "admin": {
                     "username": "admin",
@@ -48,6 +52,7 @@ class config {
                 "warnOnDuplicateUUID": true
             }
         };
+        /** @public */
         this.conf = this.defaultConfig;
         if (fs.existsSync('./serverData/config.json')) {
             console.log('Loading Existing Config...');
