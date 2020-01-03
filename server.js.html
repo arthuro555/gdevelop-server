@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: server.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: server.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+/**
+ * @fileOverview The server part of the project.
+ * @author Arthur Pacaud (arthuro555)
+ * @version 0.0.1-dev-in-progress
+ */
+const confighandler_1 = require("./confighandler");
+const express = require("express");
+const socketIO = require("socket.io");
+const wireUpServer = require("socket.io-fix-close");
+const settings = require("./confighandler.js").config;
+const PORT = process.env.PORT || settings.port || 80;
+const player_1 = require("./player");
+const pmanager_1 = require("./pmanager");
+/**
+ * The class containing the server. Soon all handlers will be moved to a function to make custom servers easier to make.
+ * @class
+ * @property {pmanager} pm - The player Manager.
+ * @property {express} httpServer - The Express http server hosting the socket IO server.
+ * @property {socketIO.Server} io - The socket IO Server.
+ */
+class Server {
+    /**
+     * The constructor of the class containing the server. Soon all handlers will be moved to a function to make custom servers easier to make.
+     * @constructor
+     * @param main - Is this the main process? If yes will terminate the whole thing on control-c, else let the main program handle exiting and Interrupt signals.
+     */
+    constructor(main = false) {
+        /**
+         * Close the server. Also saves al potential data
+         * @method
+         */
+        this.close = () => {
+            this.io.emit("Closing", true);
+            // @ts-ignore
+            this.io.engine.close();
+            this.io.close();
+            this.httpServer.close();
+            console.log("Server Closed");
+            for (let p of this.pm.getPlayers()) {
+                p.logout_force();
+            }
+            this.pm.serialize();
+        };
+        /** @type {pmanager}*/
+        this.pm = new pmanager_1.pmanager();
+        this.pm.loadData();
+        /** @type {express}*/
+        this.httpServer = express()
+            .use((req, res) => res.sendFile("/CPannel/index.html", { root: __dirname }))
+            .listen(PORT, () => console.log(`Listening on ${PORT}`));
+        /** @type {socketIO.Server}*/
+        this.io = socketIO(this.httpServer);
+        wireUpServer(this.httpServer, this.io);
+        // for avoiding interference in sub-functions
+        let that = this;
+        this.io.on('connection', function (socket) {
+            console.log("Player Connected");
+            socket.on('disconnect', function () {
+                console.log("Non Logged-in player disconnected.");
+            });
+            socket.on('auth', function (data) {
+                let p = data["password"];
+                let u = data["username"];
+                console.log(u + " is trying to log in...");
+                let token = that.pm.login(u, p, socket.id);
+                if (token === false) {
+                    console.log("Auth. Failed for " + u + "!.");
+                    socket.emit("AuthFail", true);
+                }
+                else {
+                    console.log(u + " logged in.");
+                    socket.emit("AuthSuccess", token);
+                    // SOCKET.ON DEFINITIONS HERE
+                    socket.on('disconnect', function (data) {
+                        console.log(data["username"] + " disconnected.");
+                        if (!that.pm.logout(data["username"], data["token"])) {
+                            console.error("Error while logging out.");
+                            console.warn("THIS IS NOT A NORMAL ERROR. SOMEONE IS INTENTIONALLY TRYING TO CRASH OR TAKE CONTROL OF THE SERVER!!!");
+                            console.warn("You should shut down the server as soon as possible or ban the user provoking this.");
+                        }
+                    });
+                    socket.on("off", function () {
+                        const currentPlayer = that.pm.getBySocketID(socket.id);
+                        if (currentPlayer === false) {
+                            return;
+                        }
+                        // This seems weird but is for now my best way to keep the typing while having an unknown type
+                        const plyer = currentPlayer;
+                        if (plyer.isMod()) {
+                            // Try to close the server a clean way
+                            that.close();
+                            console.log("Goodbye!");
+                        }
+                    });
+                    socket.on("updateState", function (data) {
+                        that.updateState(socket, data);
+                    });
+                    socket.on("event", function (data) {
+                        if (confighandler_1.config["verbose"]) {
+                            console.log("Event received: " + JSON.stringify(data));
+                        }
+                        socket.broadcast.emit("event", data);
+                    });
+                }
+            });
+        });
+        if (main) {
+            if (process.platform === "win32") {
+                let rl = require("readline").createInterface({
+                    input: process.stdin,
+                    output: process.stdout
+                });
+                rl.on("SIGINT", function () {
+                    // @ts-ignore
+                    process.emit("SIGINT");
+                });
+            }
+            process.on('SIGINT', function () {
+                console.log("Caught interrupt signal");
+                that.close();
+                process.exit();
+            });
+        }
+        // Hacky way of requesting Data. Will change in the future.
+        const updateGameState = function () {
+            that.io.emit("tick", that.pm.getAllObjects());
+            setTimeout(updateGameState, 200);
+        };
+        setTimeout(updateGameState, 200);
+    }
+    /**
+     * Function called each time a user sends his new data to update the previous one. Will be removed in the future to replace with more events to prevent the need of sending big packs of data each tick.
+     * @method
+     * @param {socketIO.Socket} socket - The socket sending the data.
+     * @param {object} data - The data sent by the socket.
+     */
+    updateState(socket, data) {
+        let p = this.pm.getBySocketID(socket.id);
+        if (p instanceof player_1.player) {
+            p.updateObjects(data["token"], data["data"]);
+        }
+        else {
+            socket.emit("error", "NotLoggedIn");
+        }
+    }
+    /**
+     * Easier to use alias of &lt;tt>this.pm.serialize&lt;/tt>. Saves all the player Data.
+     * @method
+     */
+    save() {
+        this.pm.serialize();
+    }
+}
+module.exports.Server = Server;
+exports.default = Server;
+//# sourceMappingURL=server.js.map</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="config.html">config</a></li><li><a href="gdobject.html">gdobject</a></li><li><a href="player.html">player</a></li><li><a href="pmanager.html">pmanager</a></li><li><a href="Server.html">Server</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Fri Jan 03 2020 20:46:10 GMT+0000 (UTC)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
