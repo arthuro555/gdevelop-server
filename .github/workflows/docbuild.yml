@@ -24,7 +24,7 @@ jobs:
         rm package-lock.json
         yarn install
         npm run build
-        jsdoc ./build/main.js ./build/server.js ./build/player.js ./build/pmanager.js ./build/confighandler.js
+        jsdoc ./build/main.js ./build/player.js ./build/pmanager.js ./build/confighandler.js
         mv ./out docs
       env:
         CI: true
