@@ -189,7 +189,7 @@ export class pmanager {
      * @return {player | boolean}
      */
     getBySocketID(socketID:string) {
-        /** @type {player} p */
+        /** @type {player}*/
         for (let plyr of this.players) {
             if (plyr.verifySocketID(socketID)){
                 return plyr;
