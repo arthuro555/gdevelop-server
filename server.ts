@@ -17,25 +17,38 @@ import {player} from "./player"
 import {pmanager} from "./pmanager"
 
 /**
- *
- * @param main - Is this the main process? If yes will terminate the whole thing on control-c
- * @constructor
+ * The class containing the server. Soon all handlers will be moved to a function to make custom servers easier to make.
+ * @class
+ * @property {pmanager} pm - The player Manager.
+ * @property {express} httpServer - The Express http server hosting the socket IO server.
+ * @property {socketIO.Server} io - The socket IO Server.
  */
 class Server{
     pm:pmanager;
     httpServer:express;
     io:socketIO.Server;
+
+    /**
+     * The constructor of the class containing the server. Soon all handlers will be moved to a function to make custom servers easier to make.
+     * @constructor
+     * @param main - Is this the main process? If yes will terminate the whole thing on control-c, else let the main program handle exiting and Interrupt signals.
+     */
     constructor(main:boolean = false) {
+        /** @type {pmanager}*/
         this.pm = new pmanager();
         this.pm.loadData();
+
+        /** @type {express}*/
 
         this.httpServer = express()
             .use((req, res) => res.sendFile("/CPannel/index.html", {root: __dirname}))
             .listen(PORT, () => console.log(`Listening on ${PORT}`));
+        /** @type {socketIO.Server}*/
         this.io = socketIO(this.httpServer);
 
         wireUpServer(this.httpServer, this.io);
 
+        // for avoiding interference in sub-functions
         let that = this;
 
         this.io.on('connection', function (socket) {
@@ -115,6 +128,7 @@ class Server{
             });
         }
 
+        // Hacky way of requesting Data. Will change in the future.
         const updateGameState = function () {
             that.io.emit("tick", that.pm.getAllObjects());
             setTimeout(updateGameState, 200)
@@ -122,6 +136,10 @@ class Server{
         setTimeout(updateGameState, 200);
     }
 
+    /**
+     * Close the server. Also saves al potential data
+     * @method
+     */
     close = () => {
         this.io.emit("Closing", true);
         // @ts-ignore
@@ -135,13 +153,27 @@ class Server{
         this.pm.serialize();
     };
 
-    updateState = (socket:socketIO.Socket, data:object) => {
+    /**
+     * Function called each time a user sends his new data to update the previous one. Will be removed in the future to replace with more events to prevent the need of sending big packs of data each tick.
+     * @method
+     * @param {socketIO.Socket} socket - The socket sending the data.
+     * @param {object} data - The data sent by the socket.
+     */
+    updateState (socket:socketIO.Socket, data:object){
         let p = this.pm.getBySocketID(socket.id);
         if (p instanceof player) {
             p.updateObjects(data["token"], data["data"]);
         } else {
             socket.emit("error", "NotLoggedIn")
         }
+    }
+
+    /**
+     * Easier to use alias of <tt>this.pm.serialize</tt>. Saves all the player Data.
+     * @method
+     */
+    save(){
+        this.pm.serialize()
     }
 }
 
