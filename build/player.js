@@ -13,7 +13,7 @@ let jwt = require('jsonwebtoken');
 const confighandler_1 = require("./confighandler");
 const settings = confighandler_1.config;
 /**
- * Represents an Object in a scene. Stores GDevelop objects object_data.
+ * Represents an Object's data in a scene. Stores GDevelop objects object_data.
  * @class
  * @param {string} name - The Name of the object to know which one to spawn.
  * @param {string} uuid - The GDevelop UUID to interact with an object in particular.
@@ -68,6 +68,7 @@ exports.gdobject = gdobject;
  * @param {string} username - The username.
  * @param {string} password - The password (will automatically be hashed).
  * @param {boolean} [moderator] - Is the user an admin?
+ * @param {string} socket_id - Used to identify the current user without needing to trust the user controlled username.
  * @property {Array<gdobject>} object_data - An <tt>Array</tt> containing Objects and User data.
  * @property {string} _password - The user password (Hashed).
  * @property {Array<string>} _token - An <tt>Array</tt> containing the Authentication tokens.
@@ -75,7 +76,7 @@ exports.gdobject = gdobject;
  * @property {string} username - The <tt>player</tt> Username.
  * @property {boolean} online - If the player is not online, this flag will prevent object_data to be modified.
  * @property {boolean} moderator - Modify this to true to let this player access Admin features (server-side).
- * @property {Array<string>} socket_id - Permits to identify if a socket is the owner of an account.
+ * @property {string} socket_id - Permits to identify if a socket is the owner of an account.
  */
 class player {
     /** @constructor */
@@ -87,8 +88,6 @@ class player {
          * @private
          */
         this._password = cryptog.createHash('sha256').update(password).digest('hex');
-        /**@type {string[]}*/
-        this.socket_ids = [];
         /**
          * @type {Array<string>}
          * @private
@@ -264,9 +263,10 @@ class player {
      * Verify the password and returns a new token if it was correct, and false if it wasn't.
      * @method
      * @param {string} password - The <tt>player</tt>'s Password
+     * @param {string} socketID - The <tt>player</tt>'s SocketID (To link the socket with the current account if login successfully)
      * @returns {boolean | string}
      */
-    login(password) {
+    login(password, socketID) {
         password = cryptog.createHash('sha256').update(password).digest('hex');
         if (password === this._password) {
             let tuuid = uuidv4();
@@ -276,6 +276,7 @@ class player {
             // @ts-ignore
             this._token.push(tarray);
             this.online = true;
+            this.socket_id = socketID;
             return token;
         }
         return false;
@@ -366,12 +367,7 @@ class player {
      * @return {boolean}
      */
     verifySocketID(socketID) {
-        for (let socket_id in this.socket_ids) {
-            if (socketID === socket_id) {
-                return true;
-            }
-        }
-        return false;
+        return socketID === this.socket_id;
     }
     /**
      * Serialize and returns the player object_data.
@@ -393,7 +389,7 @@ class player {
      * @method
      * @static
      * @param {player} playerInstance - The player instance where the object_data should be loaded.
-     * @param {Array} data - The serialized player object_data.
+     * @param {Object} data - The serialized player object_data.
      * @returns {player}
      */
     static loadData(playerInstance, data) {

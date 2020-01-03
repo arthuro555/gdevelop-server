@@ -15,6 +15,7 @@ const PORT = process.env.PORT || 80;
 
 import {player} from "./player"
 import {pmanager} from "./pmanager"
+
 let pm = new pmanager();
 pm.loadData();
 
@@ -34,7 +35,7 @@ io.on('connection', function (socket) {
         let p = data["password"];
         let u = data["username"];
         console.log(u + " is trying to log in...");
-        let token = pm.login(u, p);
+        let token = pm.login(u, p, socket.id);
         if (token === false) {
             console.log("Auth. Failed for " + u + "!.");
             socket.emit("AuthFail", true);
@@ -55,7 +56,13 @@ io.on('connection', function (socket) {
             });
 
             socket.on("off", function (data) {
-                if (pm.getPlayer(data["username"]).isMod()) {
+                const currentPlayer = pm.getBySocketID(socket.id);
+                if(currentPlayer === false){
+                    return;
+                }
+                // This seems weird but is for now my best way to keep the typing while having an unknown type
+                const plyer:player = currentPlayer;
+                if (plyer.isMod()) {
                     // Try to close the server a clean way
                     io.emit("Closing", true);
                     io.engine.close();
@@ -71,8 +78,12 @@ io.on('connection', function (socket) {
             });
 
             socket.on("updateState", function (data) {
-                let p = pm.getPlayer(data["username"]);
-                p.updateObjects(data["token"], data["data"]);
+                let p = pm.getBySocketID(socket.id);
+                if (p instanceof player) {
+                    p.updateObjects(data["token"], data["data"]);
+                }else{
+                    socket.emit("error", "NotLoggedIn")
+                }
             });
 
             socket.on("event", function (data) {

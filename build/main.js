@@ -11,6 +11,7 @@ const socketIO = require('socket.io');
 const wireUpServer = require('socket.io-fix-close');
 const settings = require("./confighandler.js").config;
 const PORT = process.env.PORT || 80;
+const player_1 = require("./player");
 const pmanager_1 = require("./pmanager");
 let pm = new pmanager_1.pmanager();
 pm.loadData();
@@ -28,7 +29,7 @@ io.on('connection', function (socket) {
         let p = data["password"];
         let u = data["username"];
         console.log(u + " is trying to log in...");
-        let token = pm.login(u, p);
+        let token = pm.login(u, p, socket.id);
         if (token === false) {
             console.log("Auth. Failed for " + u + "!.");
             socket.emit("AuthFail", true);
@@ -46,7 +47,13 @@ io.on('connection', function (socket) {
                 }
             });
             socket.on("off", function (data) {
-                if (pm.getPlayer(data["username"]).isMod()) {
+                const currentPlayer = pm.getBySocketID(socket.id);
+                if (currentPlayer === false) {
+                    return;
+                }
+                // This seems weird but is for now my best way to keep the typing while having an unknown type
+                const plyer = currentPlayer;
+                if (plyer.isMod()) {
                     // Try to close the server a clean way
                     io.emit("Closing", true);
                     io.engine.close();
@@ -61,8 +68,13 @@ io.on('connection', function (socket) {
                 }
             });
             socket.on("updateState", function (data) {
-                let p = pm.getPlayer(data["username"]);
-                p.updateObjects(data["token"], data["data"]);
+                let p = pm.getBySocketID(socket.id);
+                if (p instanceof player_1.player) {
+                    p.updateObjects(data["token"], data["data"]);
+                }
+                else {
+                    socket.emit("error", "NotLoggedIn");
+                }
             });
             socket.on("event", function (data) {
                 if (confighandler_1.config["verbose"]) {

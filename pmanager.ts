@@ -158,14 +158,14 @@ export class pmanager {
      * @param {string} password The <tt>player</tt>'s password.
      * @returns {string | boolean}
      */
-    login(username, password) {
+    login(username:string, password:string, socketID:string) {
         let p = this.getPlayer(username);
         if (p === null) {
             let np = new player(username, password);
             this.addPlayer(np);
-            return np.login(password);
+            return np.login(password, socketID);
         }
-        return p.login(password);
+        return p.login(password, socketID);
     }
     /**
      * Set a <tt>player</tt> offline and clear his data.
@@ -192,10 +192,10 @@ export class pmanager {
         /** @type {player} p */
         for (let plyr of this.players) {
             if (plyr.verifySocketID(socketID)){
-                return plyr
+                return plyr;
             }
         }
-        return false
+        return false;
     }
     /**
      * Serialize and save the player data in pmanager to a local file.
