@@ -28,7 +28,7 @@
 
 <header>
     
-        <h2><span class="attribs"><span class="type-signature"></span></span>player<span class="signature">(username, password, moderator<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h2>
+        <h2><span class="attribs"><span class="type-signature"></span></span>player<span class="signature">(username, password, moderator<span class="signature-attributes">opt</span>, socket_id)</span><span class="type-signature"></span></h2>
         
             <div class="class-description">Represents a Player. Authenticates players and store their login object_data and game object_data when online.</div>
         
@@ -45,7 +45,7 @@
     
 
     
-    <h4 class="name" id="player"><span class="type-signature"></span>new player<span class="signature">(username, password, moderator<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="player"><span class="type-signature"></span>new player<span class="signature">(username, password, moderator<span class="signature-attributes">opt</span>, socket_id)</span><span class="type-signature"></span></h4>
     
 
     
@@ -176,6 +176,37 @@
             
 
             <td class="description last">Is the user an admin?</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>socket_id</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">Used to identify the current user without needing to trust the user controlled username.</td>
         </tr>
 
     
@@ -380,7 +411,7 @@
             <td class="type">
             
                 
-<span class="param-type">Array.&lt;string></span>
+<span class="param-type">string</span>
 
 
             
@@ -429,7 +460,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="player.js.html">player.js</a>, <a href="player.js.html#line82">line 82</a>
+        <a href="player.js.html">player.js</a>, <a href="player.js.html#line83">line 83</a>
     </li></ul></dd>
     
 
@@ -529,7 +560,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="player.js.html">player.js</a>, <a href="player.js.html#line104">line 104</a>
+        <a href="player.js.html">player.js</a>, <a href="player.js.html#line103">line 103</a>
     </li></ul></dd>
     
 
@@ -597,7 +628,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="player.js.html">player.js</a>, <a href="player.js.html#line84">line 84</a>
+        <a href="player.js.html">player.js</a>, <a href="player.js.html#line85">line 85</a>
     </li></ul></dd>
     
 
@@ -665,75 +696,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="player.js.html">player.js</a>, <a href="player.js.html#line102">line 102</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-        
-            
-<h4 class="name" id="socket_ids"><span class="type-signature"></span>socket_ids<span class="type-signature"> :Array.&lt;string></span></h4>
-
-
-
-
-
-
-    <h5>Type:</h5>
-    <ul>
-        <li>
-            
-<span class="param-type">Array.&lt;string></span>
-
-
-        </li>
-    </ul>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="player.js.html">player.js</a>, <a href="player.js.html#line91">line 91</a>
+        <a href="player.js.html">player.js</a>, <a href="player.js.html#line101">line 101</a>
     </li></ul></dd>
     
 
@@ -801,7 +764,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="player.js.html">player.js</a>, <a href="player.js.html#line100">line 100</a>
+        <a href="player.js.html">player.js</a>, <a href="player.js.html#line99">line 99</a>
     </li></ul></dd>
     
 
@@ -869,7 +832,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="player.js.html">player.js</a>, <a href="player.js.html#line98">line 98</a>
+        <a href="player.js.html">player.js</a>, <a href="player.js.html#line97">line 97</a>
     </li></ul></dd>
     
 
@@ -970,7 +933,7 @@
             <td class="type">
             
                 
-<span class="param-type">Array</span>
+<span class="param-type">Object</span>
 
 
             
@@ -1021,7 +984,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="player.js.html">player.js</a>, <a href="player.js.html#line399">line 399</a>
+        <a href="player.js.html">player.js</a>, <a href="player.js.html#line395">line 395</a>
     </li></ul></dd>
     
 
@@ -1176,7 +1139,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="player.js.html">player.js</a>, <a href="player.js.html#line383">line 383</a>
+        <a href="player.js.html">player.js</a>, <a href="player.js.html#line379">line 379</a>
     </li></ul></dd>
     
 
@@ -1354,7 +1317,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="player.js.html">player.js</a>, <a href="player.js.html#line173">line 173</a>
+        <a href="player.js.html">player.js</a>, <a href="player.js.html#line172">line 172</a>
     </li></ul></dd>
     
 
@@ -1521,7 +1484,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="player.js.html">player.js</a>, <a href="player.js.html#line114">line 114</a>
+        <a href="player.js.html">player.js</a>, <a href="player.js.html#line113">line 113</a>
     </li></ul></dd>
     
 
@@ -1691,7 +1654,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="player.js.html">player.js</a>, <a href="player.js.html#line133">line 133</a>
+        <a href="player.js.html">player.js</a>, <a href="player.js.html#line132">line 132</a>
     </li></ul></dd>
     
 
@@ -1861,7 +1824,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="player.js.html">player.js</a>, <a href="player.js.html#line152">line 152</a>
+        <a href="player.js.html">player.js</a>, <a href="player.js.html#line151">line 151</a>
     </li></ul></dd>
     
 
@@ -1982,7 +1945,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="player.js.html">player.js</a>, <a href="player.js.html#line337">line 337</a>
+        <a href="player.js.html">player.js</a>, <a href="player.js.html#line338">line 338</a>
     </li></ul></dd>
     
 
@@ -2088,7 +2051,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="player.js.html">player.js</a>, <a href="player.js.html#line359">line 359</a>
+        <a href="player.js.html">player.js</a>, <a href="player.js.html#line360">line 360</a>
     </li></ul></dd>
     
 
@@ -2142,7 +2105,7 @@
     
 
     
-    <h4 class="name" id="login"><span class="type-signature"></span>login<span class="signature">(password)</span><span class="type-signature"> &rarr; {boolean|string}</span></h4>
+    <h4 class="name" id="login"><span class="type-signature"></span>login<span class="signature">(password, socketID)</span><span class="type-signature"> &rarr; {boolean|string}</span></h4>
     
 
     
@@ -2203,6 +2166,29 @@
             
 
             <td class="description last">The <tt>player</tt>'s Password</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>socketID</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The <tt>player</tt>'s SocketID (To link the socket with the current account if login successfully)</td>
         </tr>
 
     
@@ -2401,7 +2387,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="player.js.html">player.js</a>, <a href="player.js.html#line313">line 313</a>
+        <a href="player.js.html">player.js</a>, <a href="player.js.html#line314">line 314</a>
     </li></ul></dd>
     
 
@@ -2507,7 +2493,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="player.js.html">player.js</a>, <a href="player.js.html#line327">line 327</a>
+        <a href="player.js.html">player.js</a>, <a href="player.js.html#line328">line 328</a>
     </li></ul></dd>
     
 
@@ -2762,7 +2748,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="player.js.html">player.js</a>, <a href="player.js.html#line300">line 300</a>
+        <a href="player.js.html">player.js</a>, <a href="player.js.html#line301">line 301</a>
     </li></ul></dd>
     
 
@@ -3017,7 +3003,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="player.js.html">player.js</a>, <a href="player.js.html#line192">line 192</a>
+        <a href="player.js.html">player.js</a>, <a href="player.js.html#line191">line 191</a>
     </li></ul></dd>
     
 
@@ -3172,7 +3158,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="player.js.html">player.js</a>, <a href="player.js.html#line251">line 251</a>
+        <a href="player.js.html">player.js</a>, <a href="player.js.html#line250">line 250</a>
     </li></ul></dd>
     
 
@@ -3350,7 +3336,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="player.js.html">player.js</a>, <a href="player.js.html#line345">line 345</a>
+        <a href="player.js.html">player.js</a>, <a href="player.js.html#line346">line 346</a>
     </li></ul></dd>
     
 
@@ -3487,7 +3473,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="player.js.html">player.js</a>, <a href="player.js.html#line289">line 289</a>
+        <a href="player.js.html">player.js</a>, <a href="player.js.html#line290">line 290</a>
     </li></ul></dd>
     
 
@@ -3642,7 +3628,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="player.js.html">player.js</a>, <a href="player.js.html#line368">line 368</a>
+        <a href="player.js.html">player.js</a>, <a href="player.js.html#line369">line 369</a>
     </li></ul></dd>
     
 
@@ -3797,7 +3783,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="player.js.html">player.js</a>, <a href="player.js.html#line224">line 224</a>
+        <a href="player.js.html">player.js</a>, <a href="player.js.html#line223">line 223</a>
     </li></ul></dd>
     
 
@@ -3867,7 +3853,7 @@
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Sat Nov 30 2019 15:41:50 GMT+0000 (UTC)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Fri Jan 03 2020 17:41:05 GMT+0000 (UTC)
 </footer>
 
 <script> prettyPrint(); </script>
