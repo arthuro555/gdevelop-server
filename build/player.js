@@ -282,6 +282,26 @@ class player {
         return false;
     }
     /**
+     * Verify the password and returns a new token if it was correct, and false if it wasn't. This one doesn't make the player online, only for password verification and token generation purpose.
+     * @method
+     * @param {string} password - The <tt>player</tt>'s Password
+     * @param {string} socketID - The <tt>player</tt>'s SocketID (To link the socket with the current account if login successfully)
+     * @returns {boolean | string}
+     */
+    loginOutGame(password) {
+        password = cryptog.createHash('sha256').update(password).digest('hex');
+        if (password === this._password) {
+            let tuuid = uuidv4();
+            let secret = settings["SECRET"];
+            let token = jwt.sign({ "username": this.username, "password": password, "tokenUUID": tuuid }, secret);
+            let tarray = Array(token, tuuid);
+            // @ts-ignore
+            this._token.push(tarray);
+            return token;
+        }
+        return false;
+    }
+    /**
      * Hashes the input and compare the hash with <tt>this._password</tt>.
      * @method
      * @param {string} password - The <tt>player</tt>'s password.

@@ -6,9 +6,12 @@
 import {config} from "./confighandler";
 
 import express = require('express');
+import {Server as httpServer}  from "http";
 import socketIO = require('socket.io');
 import wireUpServer = require('socket.io-fix-close');
 const settings = require("./confighandler.js").config;
+let path = require('path');
+let appRoot = path.resolve(__dirname);
 
 const PORT = process.env.PORT || settings.port || 80;
 
@@ -25,7 +28,8 @@ import {pmanager} from "./pmanager"
  */
 class Server{
     pm:pmanager;
-    httpServer:express;
+    httpApp:express.Application;
+    httpServer:httpServer;
     io:socketIO.Server;
 
     /**
@@ -39,17 +43,90 @@ class Server{
         this.pm.loadData();
 
         /** @type {express}*/
+        this.httpApp = express();
 
-        this.httpServer = express()
-            .use((req, res) => res.sendFile("/CPannel/index.html", {root: __dirname}))
-            .listen(PORT, () => console.log(`Listening on ${PORT}`));
+        // For avoiding interference in sub-functions
+        let that = this;
+
+        // Utility Express Function
+        let getCookie = (cookies:string, cookieName:string):string => {
+            let cookieList:Array<string> = cookies.split('; ');
+            for (let cookie of cookieList){
+                if (cookie.split("=")[0] === cookieName){
+                    return cookie.split("=")[1]
+                }
+            }
+            return null;
+        };
+
+        // Add POST Support
+        this.httpApp.use(express.urlencoded());
+
+        // Add Static files
+        this.httpApp.use("/auth/css", express.static(__dirname + '/CPannel/auth/css'));
+        this.httpApp.use("/auth/fonts", express.static(__dirname + '/CPannel/auth/fonts'));
+        this.httpApp.use("/auth/images", express.static(__dirname + '/CPannel/auth/images'));
+        this.httpApp.use("/auth/js", express.static(__dirname + '/CPannel/auth/js'));
+        this.httpApp.use("/auth/vendor", express.static(__dirname + '/CPannel/auth/vendor'));
+
+        // GET method route
+        this.httpApp.get('/', function (req:express.Request, res:express.Response) {
+            // Verify Auth
+            if (getCookie(req.headers.cookie, "token") !== null || getCookie(req.headers.cookie, "username") !== null ){
+                let player:player = that.pm.getPlayer(getCookie(req.headers.cookie, "username"));
+                if(player !== null){
+                    if (player.verifyToken(getCookie(req.headers.cookie, "token"))){
+                        if (player.isMod()){
+                            res.redirect("admin", 301)
+                        }
+                    }
+                }
+            }
+            res.sendFile("./CPannel/index.html",{root: appRoot})
+        });
+        this.httpApp.get('/auth', function (req:express.Request, res:express.Response) {
+            // Verify if Auth already
+            if (getCookie(req.headers.cookie, "token") !== null || getCookie(req.headers.cookie, "username") !== null ){
+                let player:player = that.pm.getPlayer(getCookie(req.headers.cookie, "username"));
+                if(player !== null){
+                    if (player.verifyToken(getCookie(req.headers.cookie, "token"))){
+                        if (player.isMod()){
+                            res.redirect("admin", 301)
+                        }
+                    }
+                }
+            }
+            res.sendFile("./CPannel/auth/index.html",{root: appRoot})
+        });
+
+        // POST method route
+        this.httpApp.post('/auth', function (req:express.Request, res:express.Response) {
+            // Verify Auth
+            if (getCookie(req.headers.cookie, "token") !== null || getCookie(req.headers.cookie, "username") !== null ){
+                let player:player = that.pm.getPlayer(getCookie(req.headers.cookie, "username"));
+                if(player !== null){
+                    if (player.verifyToken(getCookie(req.headers.cookie, "token"))){
+                        if (player.isMod()){
+                            res.redirect("admin", 301)
+                        }
+                    }
+                }
+            }
+
+            // Login
+            console.log(req.body.ign, req.body.password);
+            if (req.params["ign"] !== undefined || req.params["password"] !== undefined){
+
+            }
+
+            res.sendFile("./CPannel/auth/index.html",{root: appRoot})
+        });
+        this.httpServer = this.httpApp.listen(PORT, () => console.log(`Listening on ${PORT}`));
+
         /** @type {socketIO.Server}*/
         this.io = socketIO(this.httpServer);
 
         wireUpServer(this.httpServer, this.io);
-
-        // for avoiding interference in sub-functions
-        let that = this;
 
         this.io.on('connection', function (socket) {
             console.log("Player Connected");
