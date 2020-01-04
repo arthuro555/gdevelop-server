@@ -7,8 +7,8 @@
   "repository": "https://github.com/arthuro555/gdevelop-server",
   "scripts": {
     "start": "node .",
-    "electron": "electron .",
-    "build": "yarn install && tsc -p ."
+    "electron": "cd build/UI && electron UI.js",
+    "build": "cp -r CPannel build && yarn && tsc -p . && cd UI && tsc -p ."
   },
   "license": "MIT",
   "bin": {
