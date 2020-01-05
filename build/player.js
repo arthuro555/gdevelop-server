@@ -296,7 +296,6 @@ class player {
             let tarray = Array(token, tuuid);
             // @ts-ignore
             this._token.push(tarray);
-            console.log("token" + this._token);
             return token;
         }
         return false;
