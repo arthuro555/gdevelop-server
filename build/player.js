@@ -285,7 +285,6 @@ class player {
      * Verify the password and returns a new token if it was correct, and false if it wasn't. This one doesn't make the player online, only for password verification and token generation purpose.
      * @method
      * @param {string} password - The <tt>player</tt>'s Password
-     * @param {string} socketID - The <tt>player</tt>'s SocketID (To link the socket with the current account if login successfully)
      * @returns {boolean | string}
      */
     loginOutGame(password) {

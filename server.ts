@@ -7,6 +7,7 @@ import {config} from "./confighandler";
 
 import express = require('express');
 import {Server as httpServer}  from "http";
+import cryptog = require("crypto");
 import socketIO = require('socket.io');
 import wireUpServer = require('socket.io-fix-close');
 const settings = require("./confighandler.js").config;
@@ -35,7 +36,7 @@ class Server{
     /**
      * The constructor of the class containing the server. Soon all handlers will be moved to a function to make custom servers easier to make.
      * @constructor
-     * @param main - Is this the main process? If yes will terminate the whole thing on control-c, else let the main program handle exiting and Interrupt signals.
+     * @param {boolean} main - Is this the main process? If yes will terminate the whole thing on control-c, else let the main program handle exiting and Interrupt signals.
      */
     constructor(main:boolean = false) {
         /** @type {pmanager}*/
@@ -114,11 +115,17 @@ class Server{
             }
 
             // Login
-            console.log(req.body.ign, req.body.password);
-            if (req.params["ign"] !== undefined || req.params["password"] !== undefined){
-
+            let password = cryptog.createHash('md5').update(req.body.password).digest('hex');
+            let user = that.pm.getPlayer(req.body.ign);
+            if (user !== null) {
+                let token = user.loginOutGame(password);
+                if (token !== false) {
+                    if(config["Verbose"]) console.log("User", user.username,"Connected successfully through the web interface.");
+                    res.cookie('token', token);
+                    res.redirect("/", 301);
+                }
             }
-
+            if(config["Verbose"]) console.log("Failed authentification on web interface");
             res.sendFile("./CPannel/auth/index.html",{root: appRoot})
         });
         this.httpServer = this.httpApp.listen(PORT, () => console.log(`Listening on ${PORT}`));

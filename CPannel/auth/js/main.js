@@ -63,11 +63,5 @@
         $(thisAlert).removeClass('alert-validate');
     }
 
-    let btn = document.getElementsByClassName("login100-form-btn")[0];
-    btn.addEventListener("onclick", function(e){
-        let password = document.getElementsByName("password")[0];
-        password.innerText = hex_md5(password.innerText);
-    });
-    
 
 })(jQuery);
