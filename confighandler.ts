@@ -32,6 +32,7 @@ export class config {
         "SECRET": uuidv4(),
         "Verbose": false,
         "port": 80,
+        "debug": false,
         "defaultUsers": {
             "admin": {
                 "username": "admin",

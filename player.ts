@@ -297,6 +297,7 @@ export class player {
             let tarray:string[] = Array(token,tuuid);
             // @ts-ignore
             this._token.push(tarray);
+            console.log("token"+this._token);
             return token;
         }
         return false;

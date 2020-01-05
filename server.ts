@@ -49,85 +49,10 @@ class Server{
         // For avoiding interference in sub-functions
         let that = this;
 
-        // Utility Express Function
-        let getCookie = (cookies:string, cookieName:string):string => {
-            let cookieList:Array<string> = cookies.split('; ');
-            for (let cookie of cookieList){
-                if (cookie.split("=")[0] === cookieName){
-                    return cookie.split("=")[1]
-                }
-            }
-            return null;
-        };
-
-        // Add POST Support
-        this.httpApp.use(express.urlencoded());
-
         // Add Static files
-        this.httpApp.use("/auth/css", express.static(__dirname + '/CPannel/auth/css'));
-        this.httpApp.use("/auth/fonts", express.static(__dirname + '/CPannel/auth/fonts'));
-        this.httpApp.use("/auth/images", express.static(__dirname + '/CPannel/auth/images'));
-        this.httpApp.use("/auth/js", express.static(__dirname + '/CPannel/auth/js'));
-        this.httpApp.use("/auth/vendor", express.static(__dirname + '/CPannel/auth/vendor'));
+        this.httpApp.use("/",express.static(__dirname+"/CPannel"));
 
-        // GET method route
-        this.httpApp.get('/', function (req:express.Request, res:express.Response) {
-            // Verify Auth
-            if (getCookie(req.headers.cookie, "token") !== null || getCookie(req.headers.cookie, "username") !== null ){
-                let player:player = that.pm.getPlayer(getCookie(req.headers.cookie, "username"));
-                if(player !== null){
-                    if (player.verifyToken(getCookie(req.headers.cookie, "token"))){
-                        if (player.isMod()){
-                            res.redirect("admin", 301)
-                        }
-                    }
-                }
-            }
-            res.sendFile("./CPannel/index.html",{root: appRoot})
-        });
-        this.httpApp.get('/auth', function (req:express.Request, res:express.Response) {
-            // Verify if Auth already
-            if (getCookie(req.headers.cookie, "token") !== null || getCookie(req.headers.cookie, "username") !== null ){
-                let player:player = that.pm.getPlayer(getCookie(req.headers.cookie, "username"));
-                if(player !== null){
-                    if (player.verifyToken(getCookie(req.headers.cookie, "token"))){
-                        if (player.isMod()){
-                            res.redirect("admin", 301)
-                        }
-                    }
-                }
-            }
-            res.sendFile("./CPannel/auth/index.html",{root: appRoot})
-        });
-
-        // POST method route
-        this.httpApp.post('/auth', function (req:express.Request, res:express.Response) {
-            // Verify Auth
-            if (getCookie(req.headers.cookie, "token") !== null || getCookie(req.headers.cookie, "username") !== null ){
-                let player:player = that.pm.getPlayer(getCookie(req.headers.cookie, "username"));
-                if(player !== null){
-                    if (player.verifyToken(getCookie(req.headers.cookie, "token"))){
-                        if (player.isMod()){
-                            res.redirect("admin", 301)
-                        }
-                    }
-                }
-            }
-
-            // Login
-            let password = cryptog.createHash('md5').update(req.body.password).digest('hex');
-            let user = that.pm.getPlayer(req.body.ign);
-            if (user !== null) {
-                let token = user.loginOutGame(password);
-                if (token !== false) {
-                    if(config["Verbose"]) console.log("User", user.username,"Connected successfully through the web interface.");
-                    res.cookie('token', token);
-                    res.redirect("/", 301);
-                }
-            }
-            if(config["Verbose"]) console.log("Failed authentification on web interface");
-            res.sendFile("./CPannel/auth/index.html",{root: appRoot})
-        });
+        // Start web server
         this.httpServer = this.httpApp.listen(PORT, () => console.log(`Listening on ${PORT}`));
 
         /** @type {socketIO.Server}*/
@@ -189,7 +114,36 @@ class Server{
                         socket.broadcast.emit("event", data);
                     })
                 }
-            })
+            });
+            socket.on('web-auth', function (data) {
+                console.log(data);
+                let p = data["password"];
+                let u = data["username"];
+                if (u === undefined || p === undefined) {
+                    if(config["debug"])console.log("Invalid credentials.");
+                    socket.emit("AuthFail", true);
+                    return;
+                }
+                console.log(u + " is trying to log in through the web interface...");
+                let token = that.pm.getPlayer(u).loginOutGame(p);
+                if (token === false) {
+                    console.log("Auth. Failed for " + u + "!.");
+                    socket.emit("AuthFail", true);
+                } else {
+                    console.log(u + " logged in.");
+                    socket.emit("AuthSuccess", token);
+
+                    // SOCKET.ON DEFINITIONS HERE
+
+                    socket.on("off", function(data){
+                        let p = that.pm.getBySocketID(socket.id);
+                        if(p === false) return;
+                        if (p.isMod()){
+                            that.close()
+                        }
+                    })
+                }
+            });
         });
 
         if (main) {

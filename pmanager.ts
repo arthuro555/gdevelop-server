@@ -39,7 +39,7 @@ export class pmanager {
      * @returns {player | null}
      */
     getPlayer(playerName?:string, playerUUID?:string) {
-        if (config["debug"]) {console.log(playerUUID, playerName, this.getPlayers());}
+        // if (config["debug"]) {console.log(playerUUID, playerName, this.getPlayers());}
         for (const plyr of this.getPlayers()) {
             if (playerUUID !== undefined) {
                 if (plyr.uuid === playerUUID) {
@@ -210,7 +210,7 @@ export class pmanager {
             players[i] = <string><unknown>player.serialize(p);
             i++;
         }
-        if (config["debug"]){console.log(players);}
+        // if (config["debug"]){console.log(players);}
         fs.writeFileSync("./serverData/"+file, JSON.stringify(players, null, 4));
         return true;
     }
