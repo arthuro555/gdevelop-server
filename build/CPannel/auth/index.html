@@ -22,11 +22,10 @@
 	<link rel="stylesheet" type="text/css" href="css/util.css">
 	<link rel="stylesheet" type="text/css" href="css/main.css">
 <!--===============================================================================================-->
-	<script language="JavaScript">
+	<script type="application/javascript">
 		let socket = io(window.location.origin);
 
 		function login (){
-			let returnval = null;
 			let input = $('.validate-input .input100');
 			let username = $(input[0]).val();
 			let password = md5($(input[1]).val());
@@ -35,8 +34,8 @@
 				"password":password
 			};
 			if (!socket.connected){alert("Cannot connect to server!")}
-			socket.on("AuthFail",function(){
-				alert("Authentification Failed. Try again.")
+			socket.on("AuthFail",function(e){
+				alert("Authentication Failed. Try again. Error Message: "+e.toString());
 			});
 			socket.on("AuthSuccess",function(data){
 				localStorage.setItem("username", username);

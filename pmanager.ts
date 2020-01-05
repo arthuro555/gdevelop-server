@@ -38,7 +38,7 @@ export class pmanager {
      * @param {string | null} [playerUUID] The player UUID
      * @returns {player | null}
      */
-    getPlayer(playerName?:string, playerUUID?:string) {
+    getPlayer(playerName?:string, playerUUID?:string):player {
         // if (config["debug"]) {console.log(playerUUID, playerName, this.getPlayers());}
         for (const plyr of this.getPlayers()) {
             if (playerUUID !== undefined) {

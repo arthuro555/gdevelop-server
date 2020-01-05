@@ -116,14 +116,21 @@ class Server {
                 if (u === undefined || p === undefined) {
                     if (confighandler_1.config["debug"])
                         console.log("Invalid credentials.");
-                    socket.emit("AuthFail", true);
+                    socket.emit("AuthFail", "Invalid Username/password");
                     return;
                 }
                 console.log(u + " is trying to log in through the web interface...");
-                let token = that.pm.getPlayer(u).loginOutGame(p);
+                let user = that.pm.getPlayer(u);
+                if (user === null) {
+                    if (confighandler_1.config["debug"])
+                        console.log("User not existing.");
+                    socket.emit("AuthFail", "The entered username doesn't exists.");
+                    return;
+                }
+                let token = user.loginOutGame(p);
                 if (token === false) {
                     console.log("Auth. Failed for " + u + "!.");
-                    socket.emit("AuthFail", true);
+                    socket.emit("AuthFail", "Invalid password");
                 }
                 else {
                     console.log(u + " logged in.");
