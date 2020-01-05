@@ -35,7 +35,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
  */
 const confighandler_1 = require("./confighandler");
 const express = require("express");
-const cryptog = require("crypto");
 const socketIO = require("socket.io");
 const wireUpServer = require("socket.io-fix-close");
 const settings = require("./confighandler.js").config;
@@ -81,82 +80,9 @@ class Server {
         this.httpApp = express();
         // For avoiding interference in sub-functions
         let that = this;
-        // Utility Express Function
-        let getCookie = (cookies, cookieName) => {
-            let cookieList = cookies.split('; ');
-            for (let cookie of cookieList) {
-                if (cookie.split("=")[0] === cookieName) {
-                    return cookie.split("=")[1];
-                }
-            }
-            return null;
-        };
-        // Add POST Support
-        this.httpApp.use(express.urlencoded());
         // Add Static files
-        this.httpApp.use("/auth/css", express.static(__dirname + '/CPannel/auth/css'));
-        this.httpApp.use("/auth/fonts", express.static(__dirname + '/CPannel/auth/fonts'));
-        this.httpApp.use("/auth/images", express.static(__dirname + '/CPannel/auth/images'));
-        this.httpApp.use("/auth/js", express.static(__dirname + '/CPannel/auth/js'));
-        this.httpApp.use("/auth/vendor", express.static(__dirname + '/CPannel/auth/vendor'));
-        // GET method route
-        this.httpApp.get('/', function (req, res) {
-            // Verify Auth
-            if (getCookie(req.headers.cookie, "token") !== null || getCookie(req.headers.cookie, "username") !== null) {
-                let player = that.pm.getPlayer(getCookie(req.headers.cookie, "username"));
-                if (player !== null) {
-                    if (player.verifyToken(getCookie(req.headers.cookie, "token"))) {
-                        if (player.isMod()) {
-                            res.redirect("admin", 301);
-                        }
-                    }
-                }
-            }
-            res.sendFile("./CPannel/index.html", { root: appRoot });
-        });
-        this.httpApp.get('/auth', function (req, res) {
-            // Verify if Auth already
-            if (getCookie(req.headers.cookie, "token") !== null || getCookie(req.headers.cookie, "username") !== null) {
-                let player = that.pm.getPlayer(getCookie(req.headers.cookie, "username"));
-                if (player !== null) {
-                    if (player.verifyToken(getCookie(req.headers.cookie, "token"))) {
-                        if (player.isMod()) {
-                            res.redirect("admin", 301);
-                        }
-                    }
-                }
-            }
-            res.sendFile("./CPannel/auth/index.html", { root: appRoot });
-        });
-        // POST method route
-        this.httpApp.post('/auth', function (req, res) {
-            // Verify Auth
-            if (getCookie(req.headers.cookie, "token") !== null || getCookie(req.headers.cookie, "username") !== null) {
-                let player = that.pm.getPlayer(getCookie(req.headers.cookie, "username"));
-                if (player !== null) {
-                    if (player.verifyToken(getCookie(req.headers.cookie, "token"))) {
-                        if (player.isMod()) {
-                            res.redirect("admin", 301);
-                        }
-                    }
-                }
-            }
-            // Login
-            let password = cryptog.createHash('md5').update(req.body.password).digest('hex');
-            let user = that.pm.getPlayer(req.body.ign);
-            if (user !== null) {
-                let token = user.loginOutGame(password);
-                if (token !== false) {
-                    if (confighandler_1.config["Verbose"])
-                        console.log("User", user.username, "Connected successfully through the web interface.");
-                    res.cookie('token', token);
-                    res.redirect("/", 301);
-                }
-            }
-            if (confighandler_1.config["Verbose"])
-                console.log("Failed authentification on web interface");
-            res.sendFile("./CPannel/auth/index.html", { root: appRoot });
-        });
+        this.httpApp.use("/", express.static(__dirname + "/CPannel"));
+        // Start web server
         this.httpServer = this.httpApp.listen(PORT, () => console.log(`Listening on ${PORT}`));
         /** @type {socketIO.Server}*/
         this.io = socketIO(this.httpServer);
@@ -208,6 +134,36 @@ class Server {
                             console.log("Event received: " + JSON.stringify(data));
                         }
                         socket.broadcast.emit("event", data);
+                    });
+                }
+            });
+            socket.on('web-auth', function (data) {
+                console.log(data);
+                let p = data["password"];
+                let u = data["username"];
+                if (u === undefined || p === undefined) {
+                    if (confighandler_1.config["debug"])
+                        console.log("Invalid credentials.");
+                    socket.emit("AuthFail", true);
+                    return;
+                }
+                console.log(u + " is trying to log in through the web interface...");
+                let token = that.pm.getPlayer(u).loginOutGame(p);
+                if (token === false) {
+                    console.log("Auth. Failed for " + u + "!.");
+                    socket.emit("AuthFail", true);
+                }
+                else {
+                    console.log(u + " logged in.");
+                    socket.emit("AuthSuccess", token);
+                    // SOCKET.ON DEFINITIONS HERE
+                    socket.on("off", function (data) {
+                        let p = that.pm.getBySocketID(socket.id);
+                        if (p === false)
+                            return;
+                        if (p.isMod()) {
+                            that.close();
+                        }
                     });
                 }
             });
@@ -277,7 +233,7 @@ exports.default = Server;
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Sun Jan 05 2020 12:07:02 GMT+0000 (UTC)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Sun Jan 05 2020 20:27:24 GMT+0000 (UTC)
 </footer>
 
 <script> prettyPrint(); </script>
