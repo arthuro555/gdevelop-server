@@ -84,6 +84,7 @@ export class gdobject {
 export class player {
     public online: boolean;
     public object_data: gdobject[];
+    public persistent_object_data: gdobject[];
     private _password: string;
     private _token: string[];
     public uuid: any;
@@ -94,6 +95,8 @@ export class player {
     constructor(username, password, moderator=false){
         /** @type {Array<gdobject>} */
         this.object_data = [];
+        /** @type {Array<gdobject>} */
+        this.persistent_object_data = [];
         /**
          * @type {string}
          * @private

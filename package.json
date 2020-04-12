@@ -22,7 +22,7 @@
     "@types/jsonwebtoken": "^8.3.5",
     "@types/node": "^12.12.8",
     "@types/socket.io": "^2.1.4",
-    "electron": "^7.1.1",
+    "electron": "^8.1.1",
     "express": "^4.17.1",
     "jsonwebtoken": "^8.5.1",
     "socket.io": "^2.3.0",
@@ -31,6 +31,6 @@
     "uuid": "^3.3.3"
   },
   "optionalDependencies": {
-    "pkg": "^4.4.0"
+    "pkg": "^4.4.4"
   }
 }
